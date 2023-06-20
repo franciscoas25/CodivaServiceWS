@@ -1,4 +1,5 @@
 ﻿using CodivaServiceWS.Dapper.Interface;
+using CodivaServiceWS.Dto;
 using CodivaServiceWS.Service.Interface;
 using Ninject;
 using System;
@@ -14,9 +15,19 @@ namespace CodivaServiceWS.Service.Implementation
         [Inject]
         public IPessoaAutuadaDapper _pessoaAutuadaDapper { get; set; }
 
-        public bool VerificarExistenciaPessoaAutuada(string cpf_cnpj, string nome_razaoSocial)
+        public bool VerificarExistenciaPessoaAutuada(string cpf_cnpj)
         {
-            return _pessoaAutuadaDapper.VerificarExistenciaPessoaAutuada(cpf_cnpj, nome_razaoSocial);
+            return _pessoaAutuadaDapper.VerificarExistenciaPessoaAutuada(cpf_cnpj);
+        }
+
+        public PessoaAutuadaDto ObterDadosPessoaFisicaBaseDbCorporativo(string cpf_cnpj)
+        {
+            return _pessoaAutuadaDapper.ObterDadosPessoaFisicaBaseDbCorporativo(cpf_cnpj);
+        }
+
+        public PessoaAutuadaDto ObterDadosPessoaJuridicaBaseDbCorporativo(string cpf_cnpj)
+        {
+            return _pessoaAutuadaDapper.ObterDadosPessoaJuridicaBaseDbCorporativo(cpf_cnpj);
         }
 
         public bool IncluirPessoaAutuada(string cpf_cnpj, string nome_razaoSocial, string endereco, string cep, string municipio)
@@ -24,9 +35,16 @@ namespace CodivaServiceWS.Service.Implementation
             return _pessoaAutuadaDapper.IncluirPessoaAutuada(cpf_cnpj, nome_razaoSocial, endereco, cep, municipio);
         }
 
-        public bool AlterarPessoaAutuada(string cpf_cnpj, string nome_razaoSocial, string endereco, string cep, string municipio)
+        public bool AtualizarPessoaAutuada(string cpf_cnpj, string nome_razaoSocial, string endereco, string cep, string municipio)
         {
-            return _pessoaAutuadaDapper.AlterarPessoaAutuada(cpf_cnpj, nome_razaoSocial, endereco, cep, municipio);
+            var ultimaDataAlteracaoPessoaAutuada = _pessoaAutuadaDapper.ObterUltimaDataAlteracaoPessoaAutuada(cpf_cnpj);
+
+            if (ultimaDataAlteracaoPessoaAutuada.Month != DateTime.Now.Month)
+            {
+                return _pessoaAutuadaDapper.AtualizarPessoaAutuada(cpf_cnpj, nome_razaoSocial, endereco, cep, municipio);
+            }
+
+            return true;
         }
 
         public int ObterCodigoPessoaAutuada(string cpf)

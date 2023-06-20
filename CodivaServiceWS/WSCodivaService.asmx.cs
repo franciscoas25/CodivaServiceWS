@@ -1,4 +1,5 @@
-﻿using CodivaServiceWS.Service.Implementation;
+﻿using CodivaServiceWS.Dto;
+using CodivaServiceWS.Service.Implementation;
 using CodivaServiceWS.Service.Interface;
 using Ninject;
 using Ninject.Web;
@@ -45,12 +46,22 @@ namespace CodivaServiceWS
         {
             try
             {
-                if (!_pessoaAutuadaService.ValidaPessoaAutuada(cpf_cnpj, nome_razaoSocial, endereco, cep, municipio))
+                PessoaAutuadaDto pessoaAutuadaDto = new PessoaAutuadaDto();
+
+                if (string.IsNullOrEmpty(cpf_cnpj))
                     return false;
 
-                if (!_pessoaAutuadaService.VerificarExistenciaPessoaAutuada(cpf_cnpj, nome_razaoSocial))
+                if (cpf_cnpj.Length == (int)TipoPessoa.PessoaFisica)
+                    pessoaAutuadaDto = _pessoaAutuadaService.ObterDadosPessoaFisicaBaseDbCorporativo(cpf_cnpj);
+                else
+                    pessoaAutuadaDto = _pessoaAutuadaService.ObterDadosPessoaJuridicaBaseDbCorporativo(cpf_cnpj);
+
+                if (!_pessoaAutuadaService.ValidaPessoaAutuada(cpf_cnpj, pessoaAutuadaDto.NOME_RAZAOSOCIAL, pessoaAutuadaDto.ENDERECO, pessoaAutuadaDto.CEP, pessoaAutuadaDto.CIDADE))
+                    return false;
+
+                if (!_pessoaAutuadaService.VerificarExistenciaPessoaAutuada(cpf_cnpj))
                 {
-                    if (_pessoaAutuadaService.IncluirPessoaAutuada(cpf_cnpj, nome_razaoSocial, endereco, cep, municipio))
+                    if (_pessoaAutuadaService.IncluirPessoaAutuada(cpf_cnpj, pessoaAutuadaDto.NOME_RAZAOSOCIAL, pessoaAutuadaDto.ENDERECO, pessoaAutuadaDto.CEP, pessoaAutuadaDto.CIDADE))
                     {
                         var coSeqPessoaDevedora = _pessoaAutuadaService.ObterCodigoPessoaAutuada(cpf_cnpj);
 
@@ -63,7 +74,7 @@ namespace CodivaServiceWS
                 }
                 else
                 {
-                    return _pessoaAutuadaService.AlterarPessoaAutuada(cpf_cnpj, nome_razaoSocial, endereco, cep, municipio);
+                    return _pessoaAutuadaService.AtualizarPessoaAutuada(cpf_cnpj, pessoaAutuadaDto.NOME_RAZAOSOCIAL, pessoaAutuadaDto.ENDERECO, pessoaAutuadaDto.CEP, pessoaAutuadaDto.CIDADE);
                 }
             }
             catch (Exception)
