@@ -144,10 +144,8 @@
     <Compile Include="Dapper\Interface\IPessoaAutuadaDapper.cs" />
     <Compile Include="Dapper\Interface\IQueryBuilderBaseDapper.cs" />
     <Compile Include="Dto\PessoaAutuadaDto.cs" />
-    <Compile Include="Dto\PessoaJuridicaDto.cs" />
     <Compile Include="Enum\Enum.cs" />
-    <Compile Include="Model\TBPessoaFisica.cs" />
-    <Compile Include="Model\TBPessoaJuridica.cs" />
+    <Compile Include="Model\TBPessoaDevedora.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Service\Implementation\BaseService.cs" />
     <Compile Include="Service\Implementation\DebitoService.cs" />
@@ -155,7 +153,6 @@
     <Compile Include="Service\Interface\IBaseService.cs" />
     <Compile Include="Service\Interface\IDebitoService.cs" />
     <Compile Include="Service\Interface\IPessoaAutuadaService.cs" />
-    <Compile Include="Dto\PessoaFisicaDto.cs" />
     <Compile Include="WSCodivaService.asmx.cs">
       <DependentUpon>WSCodivaService.asmx</DependentUpon>
       <SubType>Component</SubType>

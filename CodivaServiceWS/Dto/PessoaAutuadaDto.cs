@@ -11,6 +11,7 @@ namespace CodivaServiceWS.Dto
         public string NOME_RAZAOSOCIAL { get; set; }
         public string ENDERECO { get; set; }
         public string CEP { get; set; }
-        public string CIDADE { get; set; }
+        public int COD_CIDADE { get; set; }
+        public string NM_CIDADE { get; set; }
     }
 }

@@ -75,6 +75,7 @@ namespace CodivaServiceWS.App_Start
 
             kernel.Bind<IPessoaAutuadaDapper>().To<PessoaAutuadaDapper>();
             kernel.Bind<IBaseDapper>().To<BaseDapper>();
+            kernel.Bind<IDebitoDapper>().To<DebitoDapper>();
 
             #endregion
         }

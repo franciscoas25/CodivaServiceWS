@@ -23,7 +23,7 @@ namespace CodivaServiceWS.Dapper.Implementation
         {
             using (IDbConnection connection = CodivaServiceConnection.GetConnection())
             {
-                var result = connection.QueryFirstOrDefault<TBPessoaFisica>($"SELECT CO_SEQ_DEBITO, NU_DOCUMENTO, TP_DEBITO FROM DBCODIVA.TB_DEBITO WHERE TP_DEBITO = {tipoDebito} AND AND NU_DOCUMENTO = '{numDocumento}' AND NU_ANO_DOCUMENTO = '{anoDocumento}' AND CO_UNIDADE_CONVENIO = '{unidadeArrecadadora}'");
+                var result = connection.QueryFirstOrDefault<TBPessoaDevedora>($"SELECT CO_SEQ_DEBITO, NU_DOCUMENTO, TP_DEBITO FROM DBCODIVA.TB_DEBITO WHERE TP_DEBITO = {tipoDebito} AND AND NU_DOCUMENTO = '{numDocumento}' AND NU_ANO_DOCUMENTO = '{anoDocumento}' AND CO_UNIDADE_CONVENIO = '{unidadeArrecadadora}'");
 
                 return result != null;
             }
