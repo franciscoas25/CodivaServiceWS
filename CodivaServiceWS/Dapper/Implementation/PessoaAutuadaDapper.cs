@@ -15,16 +15,6 @@ namespace CodivaServiceWS.Dapper.Implementation
 {
     public class PessoaAutuadaDapper : BaseDapper, IPessoaAutuadaDapper
     {
-        //public bool VerificarExistenciaPessoaAutuada(string cpf_cnpj, string nome_razaoSocial)
-        //{
-        //    using (IDbConnection connection = CodivaServiceConnection.GetConnection())
-        //    {
-        //        var result = connection.QueryFirstOrDefault<TBPessoaFisica>($"SELECT * FROM DBCODIVA.TB_PESSOA_DEVEDORA WHERE NU_CPF_CNPJ = '{cpf_cnpj}' OR NO_PESSOA = '{nome_razaoSocial}'");
-
-        //        return result != null;
-        //    }
-        //}
-
         public bool VerificarExistenciaPessoaAutuada(string cpf_cnpj)
         {
             using (IDbConnection connection = CodivaServiceConnection.GetConnection())

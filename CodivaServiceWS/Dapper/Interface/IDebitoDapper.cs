@@ -8,7 +8,7 @@ namespace CodivaServiceWS.Dapper.Interface
 {
     public interface IDebitoDapper
     {
-        bool IncluirDebito(string query);
-        bool VerificaSeDebitoEstaCadastrado(int tipoDebito, string numDocumento, string anoDocumento, string unidadeArrecadadora);
+        bool IncluirDebito(int codPessoaDevedora, string receita, int codStatusDebito, int unidadeArrecadadora, string anoDocumento, string numDocumento, string numProcesso, int tipoDebito, string valorMulta);
+        bool VerificaSeDebitoEstaCadastrado(string tipoDebito, string numDocumento, string anoDocumento, int unidadeArrecadadora);
     }
 }

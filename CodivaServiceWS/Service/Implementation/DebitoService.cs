@@ -3,9 +3,12 @@ using CodivaServiceWS.Service.Interface;
 using Ninject;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using static CodivaServiceWS.Enum.Enum;
 
 namespace CodivaServiceWS.Service.Implementation
 {
@@ -17,43 +20,31 @@ namespace CodivaServiceWS.Service.Implementation
         [Inject]
         public IBaseDapper _baseDapper { get; set; }
 
-        public bool IncluirDebito(int tipoDebito, string numDocumento, string anoDocumento, string numProcesso, string gerencia, int codigoDecisao, string nomePessoa, string receita, string unidadeArrecadadora, string dataInicialAtualizacaoMonetaria, string valorInicialAtualizacaoMonetaria, string dataVencimento, string banco, string agencia, string conta)
+        public bool IncluirDebito(string cpf_cnpj, string tipoDebito, string numDocumento, string anoDocumento, string numProcesso, string gerencia, string nomePessoa, string receita, int unidadeArrecadadora, string dataMulta, string valorMulta)
         {
-            //ObterCodigoPessoaDevedoraPorNome (TB_DEBITO -> CO_PESSOA_DEVEDORA)
-            //string sql = $"SELECT CO_SEQ_PESSOA_DEVEDORA FROM DBCODIVA.TB_PESSOA_DEVEDORA WHERE NO_PESSOA = '{nomePessoaAutuada}'";
+            var codigoPessoaDevedora = _baseDapper.ObterCodigoPessoaDevedoraPorCpfCnpj(cpf_cnpj);
 
-            //var codigoPessoaDevedora = _baseDapper.ObterCodigoPessoaDevedoraPorNome(sql);
+            var codTipoDebito = tipoDebito.ToLower() == TipoDebito.AutoInfracao.GetType().GetMember(TipoDebito.AutoInfracao.ToString()).First().GetCustomAttribute<DescriptionAttribute>().Description.ToLower() ? 1 : 14;
 
-
-
-            
-            //sql = $"INSERT INTO DBCODIVA.TB_DEBITO () VALUES ()";
-            
-            //_debitoDapper.IncluirDebito(sql);
-
-            return true;
+            return _debitoDapper.IncluirDebito(codigoPessoaDevedora, receita, 0, unidadeArrecadadora, anoDocumento, numDocumento, numProcesso, codTipoDebito, valorMulta);
         }
 
-        public bool ValidaDebito(int tipoDebito, string numDocumento, string anoDocumento, string numProcesso, string gerencia, int codigoDecisao, string nomePessoa, string receita, string unidadeArrecadadora, string dataInicialAtualizacaoMonetaria, string valorInicialAtualizacaoMonetaria, string dataVencimento, string banco, string agencia, string conta)
+        public bool ValidaDebito(string cpf_cnpj, string tipoDebito, string numDocumento, string anoDocumento, string numProcesso, string gerencia, string nomePessoa, string receita, int unidadeArrecadadora, string dataMulta, string valorMulta)
         {
-            return tipoDebito > 0 &&
-                   codigoDecisao > 0 &&
-                   !string.IsNullOrEmpty(numDocumento) && 
-                   !string.IsNullOrEmpty(anoDocumento) && 
-                   !string.IsNullOrEmpty(numProcesso) && 
-                   !string.IsNullOrEmpty(gerencia) && 
-                   !string.IsNullOrEmpty(nomePessoa) && 
-                   !string.IsNullOrEmpty(receita) && 
-                   !string.IsNullOrEmpty(unidadeArrecadadora) &&                   
-                   !string.IsNullOrEmpty(valorInicialAtualizacaoMonetaria) &&
-                   DateTime.TryParse(dataInicialAtualizacaoMonetaria, out DateTime result) &&
-                   DateTime.TryParse(dataVencimento, out result) &&
-                   tipoDebito == 14 ? 
-                   (!string.IsNullOrEmpty(banco) && !string.IsNullOrEmpty(agencia) && !string.IsNullOrEmpty(conta)) : 
-                   1 == 1;
+            return !string.IsNullOrEmpty(cpf_cnpj) &&
+                   !string.IsNullOrEmpty(tipoDebito) &&
+                   !string.IsNullOrEmpty(numDocumento) &&
+                   !string.IsNullOrEmpty(anoDocumento) &&
+                   !string.IsNullOrEmpty(numProcesso) &&
+                   !string.IsNullOrEmpty(gerencia) &&
+                   !string.IsNullOrEmpty(nomePessoa) &&
+                   !string.IsNullOrEmpty(receita) &&
+                   unidadeArrecadadora > 0 &&
+                   !string.IsNullOrEmpty(valorMulta) &&
+                   DateTime.TryParse(dataMulta, out DateTime result);
         }
 
-        public bool VerificaSeDebitoEstaCadastrado(int tipoDebito, string numDocumento, string anoDocumento, string unidadeArrecadadora)
+        public bool VerificaSeDebitoEstaCadastrado(string tipoDebito, string numDocumento, string anoDocumento, int unidadeArrecadadora)
         {
             return _debitoDapper.VerificaSeDebitoEstaCadastrado(tipoDebito, numDocumento, anoDocumento, unidadeArrecadadora);
         }

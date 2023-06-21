@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static CodivaServiceWS.Enum.Enum;
 
 namespace CodivaServiceWS.Service.Implementation
 {
@@ -30,11 +31,6 @@ namespace CodivaServiceWS.Service.Implementation
             return _pessoaAutuadaDapper.ObterDadosPessoaJuridicaBaseDbCorporativo(cpf_cnpj);
         }
 
-        public bool IncluirPessoaAutuada(string cpf_cnpj, string nome_razaoSocial, string endereco, string cep, string nmCidade, int codCidade)
-        {
-            return _pessoaAutuadaDapper.IncluirPessoaAutuada(cpf_cnpj, nome_razaoSocial, endereco, cep, nmCidade, codCidade);
-        }
-
         public bool AtualizarPessoaAutuada(string cpf_cnpj, string nome_razaoSocial, string endereco, string cep, string nmCidade, int codCidade)
         {
             var ultimaDataAlteracaoPessoaAutuada = _pessoaAutuadaDapper.ObterUltimaDataAlteracaoPessoaAutuada(cpf_cnpj);
@@ -55,6 +51,18 @@ namespace CodivaServiceWS.Service.Implementation
         public bool ValidaPessoaAutuada(string cpf_cnpj, string nome_razaoSocial, string endereco, string cep, string municipio)
         {
             return !string.IsNullOrEmpty(cpf_cnpj) && !string.IsNullOrEmpty(nome_razaoSocial) && !string.IsNullOrEmpty(endereco) && !string.IsNullOrEmpty(cep) && !string.IsNullOrEmpty(municipio);
+        }
+
+        public bool IncluirPessoaAutuada(string cpf_cnpj, string nome_razaoSocial, string endereco, string cep, string nmCidade, int codCidade)
+        {
+            try
+            {
+                return _pessoaAutuadaDapper.IncluirPessoaAutuada(cpf_cnpj, nome_razaoSocial, endereco, cep, nmCidade, codCidade);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
     }
 }

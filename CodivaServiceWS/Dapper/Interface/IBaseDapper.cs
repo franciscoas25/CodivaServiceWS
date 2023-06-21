@@ -9,6 +9,6 @@ namespace CodivaServiceWS.Dapper.Interface
     public interface IBaseDapper
     {
         int ObterCodigoCidadePorNome(string nomeCidade);
-        int ObterCodigoPessoaDevedoraPorNome(string query);
+        int ObterCodigoPessoaDevedoraPorCpfCnpj(string cpf_cnpj);
     }
 }

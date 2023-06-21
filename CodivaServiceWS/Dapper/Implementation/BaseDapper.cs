@@ -23,11 +23,13 @@ namespace CodivaServiceWS.Dapper.Implementation
             }
         }
 
-        public int ObterCodigoPessoaDevedoraPorNome(string query)
+        public int ObterCodigoPessoaDevedoraPorCpfCnpj(string cpf_cnpj)
         {
             using (IDbConnection connection = CodivaServiceConnection.GetConnection())
             {
-                return connection.ExecuteScalar<int>(query);
+                var result = connection.ExecuteScalar<int>($"SELECT CO_SEQ_PESSOA_DEVEDORA FROM DBCODIVA.TB_PESSOA_DEVEDORA WHERE NU_CPF_CNPJ = '{cpf_cnpj}'");
+
+                return result;
             }
         }
     }
