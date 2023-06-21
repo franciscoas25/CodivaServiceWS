@@ -12,9 +12,6 @@ using static CodivaServiceWS.Enum.Enum;
 
 namespace CodivaServiceWS
 {
-    /// <summary>
-    /// Descrição resumida de WSCodivaService
-    /// </summary>
     [WebService(Namespace = "http://tempuri.org/")]
     [WebServiceBinding(ConformsTo = WsiProfiles.BasicProfile1_1)]
     [System.ComponentModel.ToolboxItem(false)]
@@ -62,6 +59,13 @@ namespace CodivaServiceWS
                     return false;
 
                 return _debitoService.IncluirDebito(cpf_cnpj, tipoDebito, numDocumento, anoDocumento, numProcesso, gerencia, nomePessoa, receita, unidadeArrecadadora, dataMulta, valorMulta);
+
+                //if (_debitoService.IncluirDebito(cpf_cnpj, tipoDebito, numDocumento, anoDocumento, numProcesso, gerencia, nomePessoa, receita, unidadeArrecadadora, dataMulta, valorMulta))
+                //{
+                //    return _debitoService.IncluirHistoricoSituacaoDebito(tipoDebito, numDocumento, anoDocumento, unidadeArrecadadora);
+                //}
+                //else
+                //    return false;
             }
             catch (Exception ex)
             {

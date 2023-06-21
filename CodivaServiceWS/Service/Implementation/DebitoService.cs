@@ -48,5 +48,14 @@ namespace CodivaServiceWS.Service.Implementation
         {
             return _debitoDapper.VerificaSeDebitoEstaCadastrado(tipoDebito, numDocumento, anoDocumento, unidadeArrecadadora);
         }
+
+        public bool IncluirHistoricoSituacaoDebito(string tipoDebito, string numDocumento, string anoDocumento, int unidadeArrecadadora)
+        {
+            var codTipoDebito = tipoDebito.ToLower() == TipoDebito.AutoInfracao.GetType().GetMember(TipoDebito.AutoInfracao.ToString()).First().GetCustomAttribute<DescriptionAttribute>().Description.ToLower() ? 1 : 14;
+
+            var coDebito = _baseDapper.ObterCodigoDebito(codTipoDebito, numDocumento, anoDocumento, unidadeArrecadadora);
+            
+            return _debitoDapper.IncluirHistoricoSituacaoDebito(coDebito, 1, "PAULO.ALBUQUERQUE");
+        }
     }
 }

@@ -19,38 +19,38 @@ namespace CodivaServiceWS.Dapper.Implementation
             using (IDbConnection connection = CodivaServiceConnection.GetConnection())
             {
                 string sql = $@"INSERT INTO DBCODIVA.TB_DEBITO
-                                    (
-                                        CO_PESSOA_DEVEDORA,
-                                        CO_RECEITA,                                        
-                                        CO_STATUS_DEBITO,
-                                        CO_UNIDADE_CONVENIO,                                       
-                                        NU_ANO_DOCUMENTO,
-                                        NU_DOCUMENTO,
-                                        NU_PROCESSO,
-                                        ST_QUITADO_CONAU,
-                                        TP_DEBITO,
-                                        VL_ORIGINAL,
-                                        VL_SALDO,
-                                        DT_ALTERACAO,
-                                        DT_VENCIMENTO
-                                    )
-                                    VALUES
-                                    (
-                                        {codPessoaDevedora},
-                                        '{receita}',
-                                        0,
-                                        {unidadeArrecadadora},
-                                        {anoDocumento.Substring(2, 2)},
-                                        {numDocumento},
-                                        {numProcesso},
-                                        'N',
-                                        {tipoDebito},
-                                        {valorMulta},
-                                        0,
-                                        to_date('{DateTime.Now}', 'dd/mm/yyyy HH24:mi:ss'),
-                                        to_date('01/01/2999', 'dd/mm/yyyy HH24:mi:ss')
-                                    )";
-                
+                                (
+                                    CO_PESSOA_DEVEDORA,
+                                    CO_RECEITA,                                        
+                                    CO_STATUS_DEBITO,
+                                    CO_UNIDADE_CONVENIO,                                       
+                                    NU_ANO_DOCUMENTO,
+                                    NU_DOCUMENTO,
+                                    NU_PROCESSO,
+                                    ST_QUITADO_CONAU,
+                                    TP_DEBITO,
+                                    VL_ORIGINAL,
+                                    VL_SALDO,
+                                    DT_ALTERACAO,
+                                    DT_VENCIMENTO
+                                )
+                                VALUES
+                                (
+                                    {codPessoaDevedora},
+                                    '{receita}',
+                                    1,
+                                    {unidadeArrecadadora},
+                                    {anoDocumento.Substring(2, 2)},
+                                    {numDocumento},
+                                    {numProcesso},
+                                    'N',
+                                    {tipoDebito},
+                                    {valorMulta},
+                                    500,
+                                    to_date('{DateTime.Now}', 'dd/mm/yyyy HH24:mi:ss'),
+                                    to_date('01/01/2999', 'dd/mm/yyyy HH24:mi:ss')
+                                )";
+
                 var result = connection.Execute(sql);
 
                 return result > 0;
@@ -66,6 +66,33 @@ namespace CodivaServiceWS.Dapper.Implementation
                 var result = connection.QueryFirstOrDefault<TBPessoaDevedora>($"SELECT CO_SEQ_DEBITO, NU_DOCUMENTO, TP_DEBITO FROM DBCODIVA.TB_DEBITO WHERE TP_DEBITO = {codTipoDebito} AND NU_DOCUMENTO = '{numDocumento}' AND NU_ANO_DOCUMENTO = '{anoDocumento}' AND CO_UNIDADE_CONVENIO = {unidadeArrecadadora}");
 
                 return result != null;
+            }
+        }
+
+        public bool IncluirHistoricoSituacaoDebito(int codDebito, int coStatusDebito, string coUsuario)
+        {
+            using (IDbConnection connection = CodivaServiceConnection.GetConnection())
+            {
+                string sql = $@"INSERT INTO DBCODIVA.TH_SITUACAO
+                                (
+                                    CO_DEBITO,    
+                                    CO_STATUS_DEBITO,
+                                    CO_USUARIO,
+                                    DT_SITUACAO,
+                                    DT_ALTERACAO
+                                )
+                                VALUES
+                                (
+                                    {codDebito},
+                                    {coStatusDebito},
+                                    '{coUsuario}',
+                                    to_date('{DateTime.Now}', 'dd/mm/yyyy HH24:mi:ss'),
+                                    to_date('{DateTime.Now}', 'dd/mm/yyyy HH24:mi:ss')
+                                )";
+
+                var result = connection.Execute(sql);
+
+                return result > 0;
             }
         }
     }

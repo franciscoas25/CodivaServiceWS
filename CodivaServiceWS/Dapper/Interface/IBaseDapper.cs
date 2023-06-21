@@ -10,5 +10,6 @@ namespace CodivaServiceWS.Dapper.Interface
     {
         int ObterCodigoCidadePorNome(string nomeCidade);
         int ObterCodigoPessoaDevedoraPorCpfCnpj(string cpf_cnpj);
+        int ObterCodigoDebito(int tipoDebito, string numDocumento, string anoDocumento, int unidadeArrecadadora);
     }
 }

@@ -32,5 +32,22 @@ namespace CodivaServiceWS.Dapper.Implementation
                 return result;
             }
         }
+
+        public int ObterCodigoDebito(int tipoDebito, string numDocumento, string anoDocumento, int unidadeArrecadadora)
+        {
+            using (IDbConnection connection = CodivaServiceConnection.GetConnection())
+            {
+                string sql = $@"SELECT CO_SEQ_DEBITO
+                                FROM DBCODIVA.TB_DEBITO
+                                WHERE TP_DEBITO = {tipoDebito}
+                                AND   NU_DOCUMENTO = '{numDocumento}'
+                                AND   NU_ANO_DOCUMENTO = '{anoDocumento.Substring(2,2)}'
+                                AND   CO_UNIDADE_CONVENIO = {unidadeArrecadadora}";
+
+                var result = connection.ExecuteScalar<int>(sql);
+
+                return result;
+            }
+        }
     }
 }
