@@ -58,14 +58,26 @@ namespace CodivaServiceWS
                 if (_debitoService.VerificaSeDebitoEstaCadastrado(tipoDebito, numDocumento, anoDocumento, unidadeArrecadadora))
                     return false;
 
-                return _debitoService.IncluirDebito(cpf_cnpj, tipoDebito, numDocumento, anoDocumento, numProcesso, gerencia, nomePessoa, receita, unidadeArrecadadora, dataMulta, valorMulta);
+                //return _debitoService.IncluirDebito(cpf_cnpj, tipoDebito, numDocumento, anoDocumento, numProcesso, gerencia, nomePessoa, receita, unidadeArrecadadora, dataMulta, valorMulta);
 
-                //if (_debitoService.IncluirDebito(cpf_cnpj, tipoDebito, numDocumento, anoDocumento, numProcesso, gerencia, nomePessoa, receita, unidadeArrecadadora, dataMulta, valorMulta))
-                //{
-                //    return _debitoService.IncluirHistoricoSituacaoDebito(tipoDebito, numDocumento, anoDocumento, unidadeArrecadadora);
-                //}
-                //else
-                //    return false;
+                if (!_debitoService.IncluirDebito(cpf_cnpj, tipoDebito, numDocumento, anoDocumento, numProcesso, gerencia, nomePessoa, receita, unidadeArrecadadora, dataMulta, valorMulta))
+                    return false;
+
+                var codigoDebito = _debitoService.ObterCodigoDebito(tipoDebito, numDocumento, anoDocumento, unidadeArrecadadora);
+
+                if (codigoDebito == 0)
+                    return false;
+
+                if (!_debitoService.IncluirHistoricoSituacaoDebito(codigoDebito, tipoDebito, numDocumento, anoDocumento, unidadeArrecadadora))
+                    return false;
+
+                //Cálculo do Nosso Número
+                //var nossoNumero = _debitoService.CalculaNossoNumero("11", receita, "0");
+
+                //Notificação Administrativa
+                _debitoService.GerarNotificacaoDebito(codigoDebito, "11012323000001820", valorMulta, "01/01/2099", "0", "0", "0", "0");
+
+                return true;
             }
             catch (Exception ex)
             {

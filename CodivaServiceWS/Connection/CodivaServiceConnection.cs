@@ -13,10 +13,23 @@ namespace CodivaServiceWS.Connection
     public static class CodivaServiceConnection
     {
         private static string _connectionString = ConfigurationManager.ConnectionStrings["CodivaServiceConnectioString"].ConnectionString;
+        private static string _connectionString2 = ConfigurationManager.ConnectionStrings["CodivaServiceConnectioString2"].ConnectionString;
 
         public static IDbConnection GetConnection()
         {
             var conn = new OracleConnection(_connectionString);
+
+            if (conn.State == ConnectionState.Closed)
+            {
+                conn.Open();
+            }
+
+            return conn;
+        }
+
+        public static IDbConnection GetConnection2()
+        {
+            var conn = new OracleConnection(_connectionString2);
 
             if (conn.State == ConnectionState.Closed)
             {

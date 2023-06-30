@@ -71,7 +71,7 @@ namespace CodivaServiceWS.Dapper.Implementation
 
         public bool IncluirHistoricoSituacaoDebito(int codDebito, int coStatusDebito, string coUsuario)
         {
-            using (IDbConnection connection = CodivaServiceConnection.GetConnection())
+            using (IDbConnection connection = CodivaServiceConnection.GetConnection2())
             {
                 string sql = $@"INSERT INTO DBCODIVA.TH_SITUACAO
                                 (
@@ -93,6 +93,70 @@ namespace CodivaServiceWS.Dapper.Implementation
                 var result = connection.Execute(sql);
 
                 return result > 0;
+            }
+        }
+
+        public bool CalculaNossoNumero(string uf, string receita, string tipoNossoNumero)
+        {
+            string proximoNossoNumero = string.Empty;
+            
+            using (IDbConnection connection = CodivaServiceConnection.GetConnection())
+            {
+                
+
+                //var parameters = new { sUF = uf, sRec = receita, sTipNossoNum = tipoNossoNumero };
+
+                //var parameters = new DynamicParameters();
+
+                //parameters.Add("sUF", uf);
+                //parameters.Add("sRec", receita);
+                //parameters.Add("sTipNossoNum", tipoNossoNumero);
+                //parameters.Add("sProxNossoNum", proximoNossoNumero);
+
+                string sql = "exec DBCODIVA.CALCULANOSSONUM @sUF, @sRec, @sTipNossoNum, @sProxNossoNum";
+
+                var parameters = new { sUF = uf, sRec = receita, sTipNossoNum = tipoNossoNumero, proximoNossoNumero };
+
+                var result = connection.Query(sql, parameters);
+
+                //var result = connection.QuerySingleOrDefault("DBCODIVA.CalculaNossoNum", parameters, commandType: System.Data.CommandType.StoredProcedure);
+
+                //var result = connection.QuerySingleOrDefault("DBCODIVA.CALCULANOSSONUM (@sUF, @sRec, @sTipNossoNum, @sProxNossoNum)", new { sUF = uf, sRec = receita, sTipNossoNum = tipoNossoNumero, sProxNossoNum = "" });
+
+                return true;
+            }
+        }
+
+        public DadosDebito ObterDadosDebito(int coDebito)
+        {
+            string sql = $@"SELECT
+                            pes.no_pessoa as NomePessoa,
+                            pes.nu_cep_pessoa as Cep,
+                            pes.nu_cpf_cnpj as CpfCnpj,
+                            pes.ds_endereco_pessoa as Endereco,
+                            pes.ds_bairro_pessoa as Bairro,
+                            deb.nu_processo as NumProcesso,
+                            mun.no_cidade as Cidade,
+                            mun.co_uf as UF,
+                            deb.nu_ais_nacional,
+                            deb.tp_debito,
+                            tp.sg_debito as SiglaDebito
+                        FROM
+                            dbcodiva.tb_debito          deb,
+                            dbcodiva.tb_tipo_debito     tp,
+                            dbcodiva.tb_pessoa_devedora pes,
+                            dbsistru.tb_cidade          mun
+                        WHERE
+                                co_seq_debito = {coDebito}
+                            AND deb.co_pessoa_devedora = pes.co_seq_pessoa_devedora
+                            AND tp.co_tipo_debito = deb.tp_debito
+                            AND pes.co_cidade = mun.co_seq_cidade";
+
+            using (IDbConnection connection = CodivaServiceConnection.GetConnection())
+            {
+                var result = connection.QueryFirstOrDefault<DadosDebito>(sql);
+
+                return result;
             }
         }
     }
