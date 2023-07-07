@@ -19,10 +19,10 @@
     <ServiceContractMappings />
   </ClientOptions>
   <MetadataSources>
-    <MetadataSource Address="https://unigru-homolog.anvisa.gov.br/unigru/webservice/guia?wsdl" Protocol="http" SourceId="1" />
+    <MetadataSource Address="https://unigru-pre.anvisa.gov.br/unigru/webservice/guia?wsdl" Protocol="http" SourceId="1" />
   </MetadataSources>
   <Metadata>
-    <MetadataFile FileName="GuiaService.wsdl" MetadataType="Wsdl" ID="b23390d2-eb99-4777-b00e-a9134f8e81ac" SourceId="1" SourceUrl="https://unigru-homolog.anvisa.gov.br/unigru/webservice/guia?wsdl" />
+    <MetadataFile FileName="GuiaService1.wsdl" MetadataType="Wsdl" ID="0e969d8e-9c23-49ad-8eff-690d4fac38cd" SourceId="1" SourceUrl="https://unigru-pre.anvisa.gov.br/unigru/webservice/guia?wsdl" />
   </Metadata>
   <Extensions>
     <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />

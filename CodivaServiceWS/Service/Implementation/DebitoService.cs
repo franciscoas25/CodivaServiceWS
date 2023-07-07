@@ -1,16 +1,13 @@
 ﻿using CodivaServiceWS.Dapper.Interface;
 using CodivaServiceWS.Service.Interface;
-using CodivaServiceWS.serviceRegistroBoleto;
+using IronPdf;
 using Ninject;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web.Services.Description;
 using static CodivaServiceWS.Enum.Enum;
 
 namespace CodivaServiceWS.Service.Implementation
@@ -71,10 +68,12 @@ namespace CodivaServiceWS.Service.Implementation
             return _debitoDapper.CalculaNossoNumero(uf, receita, tipoNossoNumero);
         }
 
-        public void GerarNotificacaoDebito(int codigoDebito, string nossoNumero, string valorMulta, string dataVencimento, string percentualSelic, string percentualMulta, string valorSelic, string valorMultaSelic)
+        public string GerarNotificacaoDebito(int codigoDebito, string nossoNumero, string valorMulta, string dataVencimento, string percentualSelic, string percentualMulta, string valorSelic, string valorMultaSelic)
         {
             try
             {
+                string urlBoleto = string.Empty;
+
                 var dadosDebito = _debitoDapper.ObterDadosDebito(codigoDebito);
 
                 string instrucoes = $"Cota Única[br][br]Não receber após o vencimento.[br][br]Código do Débito: ' {codigoDebito.ToString()} '[br]Processo nº: {dadosDebito.NumProcesso} [br][br]Dúvidas: Central de Atendimento: 0800 642 9782";
@@ -82,14 +81,11 @@ namespace CodivaServiceWS.Service.Implementation
                 serviceRegistroBoleto.requisicaoBoletoRegistradoAvulso parametrosRequisicao = new serviceRegistroBoleto.requisicaoBoletoRegistradoAvulso();
                 serviceRegistroBoleto.GuiaWebServiceClient guiaWS = new serviceRegistroBoleto.GuiaWebServiceClient();
 
-                parametrosRequisicao.idSistema = "CODIVA";
-                //parametrosRequisicao.numeroConvenio = getNumConvenio(dadosDebito.SiglaDebito, "COTAUNICA");
+                parametrosRequisicao.idSistema = "BAIXABB";
                 parametrosRequisicao.numeroConvenio = "3547147";
                 parametrosRequisicao.numeroCarteira = "17";
-                //parametrosRequisicao.numeroVariacaoCarteira = getVariacaoCarteira(dadosDebito.SiglaDebito, "COTAUNICA");
                 parametrosRequisicao.numeroVariacaoCarteira = "477";
                 parametrosRequisicao.codigoModalidadeTitulo = "1";
-                //parametrosRequisicao.dataEmissaoTitulo = DateTime.Now.ToString("dd/MM/yyyy");
                 parametrosRequisicao.dataEmissaoTitulo = "07.12.2022";
                 parametrosRequisicao.dataVencimentoTitulo = "12.07.2023";
                 parametrosRequisicao.valorOriginalTitulo = valorMulta;
@@ -99,15 +95,10 @@ namespace CodivaServiceWS.Service.Implementation
                 parametrosRequisicao.codigoAceiteTitulo = "N";
                 parametrosRequisicao.codigoTipoTitulo = "4";
                 parametrosRequisicao.codigoTipoContaCaucao = "0";
-                //parametrosRequisicao.indicadorPermissaoRecebimentoParcial = "S";
                 parametrosRequisicao.textoNumeroTituloBeneficiario = "0";
                 parametrosRequisicao.textoNumeroTituloCliente = "39809104038287511";
-                //parametrosRequisicao.textoMensagemBloquetoOcorrencia = instrucoes; //instrucoes.Substring(0, 400);
-                //parametrosRequisicao.codigoTipoInscricaoPagador = (int)TipoPessoa.PessoaFisica == 11 ? "1" : "2";
                 parametrosRequisicao.codigoTipoInscricaoPagador = "2";
-                //parametrosRequisicao.numeroInscricaoPagador = dadosDebito.CpfCnpj;
                 parametrosRequisicao.numeroInscricaoPagador = "11111111000191";
-                //parametrosRequisicao.nomePagador = dadosDebito.NomePessoa;
                 parametrosRequisicao.nomePagador = "clinkids servicos medicos ltda";
                 parametrosRequisicao.textoEnderecoPagador = dadosDebito.Endereco;
                 parametrosRequisicao.numeroCepPagador = dadosDebito.Cep;
@@ -115,13 +106,39 @@ namespace CodivaServiceWS.Service.Implementation
                 parametrosRequisicao.nomeBairroPagador = dadosDebito.Bairro;
                 parametrosRequisicao.siglaUfPagador = dadosDebito.UF;
                 parametrosRequisicao.codigoChaveUsuario = "1";
-                //parametrosRequisicao.codigoTipoCanalSolicitacao = "S";
+                parametrosRequisicao.codigoTipoCanalSolicitacao = "5";
+                parametrosRequisicao.valorDescontoTitulo = "200";
+                parametrosRequisicao.dataDescontoTitulo = "10.07.2023";
 
                 var retorno = guiaWS.boletoAvulsoRegistradoBB(parametrosRequisicao);
+
+                //if (retorno != null && retorno.guiaArrecad != null)
+                //{
+                //    HttpClient client = new HttpClient();
+                //    client.BaseAddress = new Uri("https://unigru-pre.anvisa.gov.br");
+                //    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                //    HttpResponseMessage response = client.GetAsync($"/unigru/guia/{retorno.guiaArrecad.ano.ToString()}/{retorno.guiaArrecad.numero.ToString()}").Result;
+
+                //    if (response.IsSuccessStatusCode)
+                //    {
+                //        var renderer = new ChromePdfRenderer();
+
+                //        var strContent = response.Content.ReadAsStringAsync().Result;
+
+                //        var pdf = renderer.RenderHtmlAsPdf(strContent);
+
+                //        pdf.SaveAs($"C:\\Anvisa\\CodivaServiceWS\\CodivaServiceWS\\CodivaServiceWS\\Boleto\\Boleto_{retorno.guiaArrecad.numero.ToString()}.pdf");
+                //    }
+                //}
+
+                urlBoleto = $"https://unigru-pre.anvisa.gov.br/unigru/guia/{retorno.guiaArrecad.ano.ToString()}/{retorno.guiaArrecad.numero.ToString()}";
+                
+                return urlBoleto;
             }
             catch (Exception ex)
             {
-
+                return "";
             }
         }
 

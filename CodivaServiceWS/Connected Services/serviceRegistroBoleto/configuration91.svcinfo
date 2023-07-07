@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<SavedWcfConfigurationInformation xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Version="9.1" CheckSum="+iCsmSZEhn+h27HiZnYtxnbafoqfHiJ7jXGmJWGObeQ=">
+<SavedWcfConfigurationInformation xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Version="9.1" CheckSum="h2mAYwM1nmfSlsF1+92Nj3ZyXyp/TLZKIx2aKdR2dHk=">
   <bindingConfigurations>
     <bindingConfiguration bindingType="basicHttpBinding" name="GuiaServiceSoapBinding">
       <properties>
@@ -112,10 +112,10 @@
     </bindingConfiguration>
   </bindingConfigurations>
   <endpoints>
-    <endpoint name="GuiaServicePort" contract="serviceRegistroBoleto.GuiaWebService" bindingType="basicHttpBinding" address="http://unigru-homolog.anvisa.gov.br/unigru/webservice/guia" bindingConfiguration="GuiaServiceSoapBinding">
+    <endpoint name="GuiaServicePort" contract="serviceRegistroBoleto.GuiaWebService" bindingType="basicHttpBinding" address="http://unigru-pre.anvisa.gov.br/unigru/webservice/guia" bindingConfiguration="GuiaServiceSoapBinding">
       <properties>
         <property path="/address" isComplexType="false" isExplicitlyDefined="true" clrType="System.Uri, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-          <serializedValue>http://unigru-homolog.anvisa.gov.br/unigru/webservice/guia</serializedValue>
+          <serializedValue>http://unigru-pre.anvisa.gov.br/unigru/webservice/guia</serializedValue>
         </property>
         <property path="/behaviorConfiguration" isComplexType="false" isExplicitlyDefined="false" clrType="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
           <serializedValue />

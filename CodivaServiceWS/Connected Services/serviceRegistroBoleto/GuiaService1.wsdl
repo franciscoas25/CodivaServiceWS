@@ -694,7 +694,7 @@
   </wsdl:binding>
   <wsdl:service name="GuiaService">
     <wsdl:port name="GuiaServicePort" binding="tns:GuiaServiceSoapBinding">
-      <soap:address location="http://unigru-homolog.anvisa.gov.br/unigru/webservice/guia" />
+      <soap:address location="http://unigru-pre.anvisa.gov.br/unigru/webservice/guia" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>
