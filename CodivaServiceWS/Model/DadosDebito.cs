@@ -9,6 +9,10 @@ namespace CodivaServiceWS.Model
     public class DadosDebito
     {
         public string SiglaDebito { get; set; }
+        public string AnoDocumento { get; set; }
+        public string NumDocumento { get; set; }
+        public string ValorDebito { get; set; }
+        public string DataVencimento { get; set; }
         public string NumProcesso { get; set; }
         public string NomePessoa { get; set; }
         public string CpfCnpj { get; set; }

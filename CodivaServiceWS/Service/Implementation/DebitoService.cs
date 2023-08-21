@@ -29,6 +29,22 @@ namespace CodivaServiceWS.Service.Implementation
             return _debitoDapper.IncluirDebito(codigoPessoaDevedora, receita, 0, unidadeArrecadadora, anoDocumento, numDocumento, numProcesso, codTipoDebito, valorMulta);
         }
 
+        public bool AlterarDebito(int codigoDebito, string anoDocumento, string numDocumento, string numProcesso, string valorMulta, string dataVencimento)
+        {
+            var dadosDebito = _debitoDapper.ObterDadosDebito(codigoDebito);
+
+            if (dadosDebito == null)
+                return false;
+
+            dadosDebito.AnoDocumento = anoDocumento;
+            dadosDebito.NumDocumento = numDocumento;
+            dadosDebito.NumProcesso = numProcesso;
+            dadosDebito.ValorDebito = valorMulta;
+            dadosDebito.DataVencimento = dataVencimento;
+
+            return _debitoDapper.AlterarDebito(codigoDebito, dadosDebito);
+        }
+
         public bool ValidaDebito(string cpf_cnpj, string tipoDebito, string numDocumento, string anoDocumento, string numProcesso, string gerencia, string nomePessoa, string receita, int unidadeArrecadadora, string dataMulta, string valorMulta)
         {
             return !string.IsNullOrEmpty(cpf_cnpj) &&
@@ -63,7 +79,7 @@ namespace CodivaServiceWS.Service.Implementation
             return _baseDapper.ObterCodigoDebito(codTipoDebito, numDocumento, anoDocumento, unidadeArrecadadora);
         }
 
-        public bool CalculaNossoNumero(string uf, string receita, string tipoNossoNumero)
+        public decimal CalculaNossoNumero(string uf, string receita, string tipoNossoNumero)
         {
             return _debitoDapper.CalculaNossoNumero(uf, receita, tipoNossoNumero);
         }
@@ -81,13 +97,15 @@ namespace CodivaServiceWS.Service.Implementation
                 serviceRegistroBoleto.requisicaoBoletoRegistradoAvulso parametrosRequisicao = new serviceRegistroBoleto.requisicaoBoletoRegistradoAvulso();
                 serviceRegistroBoleto.GuiaWebServiceClient guiaWS = new serviceRegistroBoleto.GuiaWebServiceClient();
 
+                var valorDesconto = float.Parse(valorMulta) * (0.2);
+
                 parametrosRequisicao.idSistema = "BAIXABB";
                 parametrosRequisicao.numeroConvenio = "3547147";
                 parametrosRequisicao.numeroCarteira = "17";
                 parametrosRequisicao.numeroVariacaoCarteira = "477";
                 parametrosRequisicao.codigoModalidadeTitulo = "1";
                 parametrosRequisicao.dataEmissaoTitulo = "07.12.2022";
-                parametrosRequisicao.dataVencimentoTitulo = "12.07.2023";
+                parametrosRequisicao.dataVencimentoTitulo = "20.08.2023";
                 parametrosRequisicao.valorOriginalTitulo = valorMulta;
                 parametrosRequisicao.codigoTipoDesconto = "1";
                 parametrosRequisicao.codigoTipoJuroMora = "0";
@@ -107,32 +125,33 @@ namespace CodivaServiceWS.Service.Implementation
                 parametrosRequisicao.siglaUfPagador = dadosDebito.UF;
                 parametrosRequisicao.codigoChaveUsuario = "1";
                 parametrosRequisicao.codigoTipoCanalSolicitacao = "5";
-                parametrosRequisicao.valorDescontoTitulo = "200";
-                parametrosRequisicao.dataDescontoTitulo = "10.07.2023";
+                parametrosRequisicao.valorDescontoTitulo = valorDesconto.ToString();
+                parametrosRequisicao.dataDescontoTitulo = "25.07.2023";
 
                 var retorno = guiaWS.boletoAvulsoRegistradoBB(parametrosRequisicao);
 
-                //if (retorno != null && retorno.guiaArrecad != null)
-                //{
-                //    HttpClient client = new HttpClient();
-                //    client.BaseAddress = new Uri("https://unigru-pre.anvisa.gov.br");
-                //    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                if (retorno != null && retorno.guiaArrecad != null)
+                {
+                    HttpClient client = new HttpClient();
+                    client.BaseAddress = new Uri("https://unigru-pre.anvisa.gov.br");
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                //    HttpResponseMessage response = client.GetAsync($"/unigru/guia/{retorno.guiaArrecad.ano.ToString()}/{retorno.guiaArrecad.numero.ToString()}").Result;
+                    HttpResponseMessage response = client.GetAsync($"/unigru/guia/{retorno.guiaArrecad.ano.ToString()}/{retorno.guiaArrecad.numero.ToString()}").Result;
 
-                //    if (response.IsSuccessStatusCode)
-                //    {
-                //        var renderer = new ChromePdfRenderer();
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var renderer = new ChromePdfRenderer();
 
-                //        var strContent = response.Content.ReadAsStringAsync().Result;
+                        var strContent = response.Content.ReadAsStringAsync().Result;
 
-                //        var pdf = renderer.RenderHtmlAsPdf(strContent);
+                        var pdf = renderer.RenderHtmlAsPdf(strContent);
 
-                //        pdf.SaveAs($"C:\\Anvisa\\CodivaServiceWS\\CodivaServiceWS\\CodivaServiceWS\\Boleto\\Boleto_{retorno.guiaArrecad.numero.ToString()}.pdf");
-                //    }
-                //}
+                        pdf.SaveAs($"C:\\Anvisa\\CodivaServiceWS\\CodivaServiceWS\\CodivaServiceWS\\Boleto\\Boleto_{retorno.guiaArrecad.numero.ToString()}.pdf");
+                    }
+                }
 
-                urlBoleto = $"https://unigru-pre.anvisa.gov.br/unigru/guia/{retorno.guiaArrecad.ano.ToString()}/{retorno.guiaArrecad.numero.ToString()}";
+                if(retorno != null && retorno.guiaArrecad != null)
+                    urlBoleto = $"https://unigru-pre.anvisa.gov.br/unigru/guia/{retorno.guiaArrecad.ano.ToString()}/{retorno.guiaArrecad.numero.ToString()}";
                 
                 return urlBoleto;
             }
