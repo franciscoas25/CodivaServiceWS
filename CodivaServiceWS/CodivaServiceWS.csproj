@@ -100,6 +100,9 @@
     <Reference Include="Ninject.Web.Common.WebHost, Version=3.3.2.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
       <HintPath>..\packages\Ninject.Web.Common.WebHost.3.3.2\lib\net45\Ninject.Web.Common.WebHost.dll</HintPath>
     </Reference>
+    <Reference Include="NReco.PdfGenerator, Version=1.2.1.0, Culture=neutral, PublicKeyToken=231663d50a41b451, processorArchitecture=MSIL">
+      <HintPath>..\packages\NReco.PdfGenerator.1.2.1\lib\net45\NReco.PdfGenerator.dll</HintPath>
+    </Reference>
     <Reference Include="Oracle.ManagedDataAccess, Version=4.122.21.1, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=MSIL">
       <HintPath>..\packages\Oracle.ManagedDataAccess.21.9.0\lib\net462\Oracle.ManagedDataAccess.dll</HintPath>
     </Reference>
@@ -117,6 +120,7 @@
       <HintPath>..\packages\System.Configuration.ConfigurationManager.6.0.0\lib\net461\System.Configuration.ConfigurationManager.dll</HintPath>
     </Reference>
     <Reference Include="System.Data.OracleClient" />
+    <Reference Include="System.Design" />
     <Reference Include="System.Drawing.Common, Version=6.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Drawing.Common.6.0.0\lib\net461\System.Drawing.Common.dll</HintPath>
     </Reference>
@@ -222,6 +226,75 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="BoletoNet\BoletoImpressao\BoletoNet.css" />
+    <EmbeddedResource Include="BoletoNet\BoletoImpressao\BoletoNetPDF.css" />
+    <EmbeddedResource Include="BoletoNet\Html.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="BoletoNet\Imagens\001.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\003.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\004.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\008.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\021.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\024.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\027.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\029.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\033.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\041.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\047.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\070.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\084.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\085.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\097.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\104.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\136.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\151.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\237.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\244.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\246.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\263.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\266.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\275.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\291.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\320.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\336.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\341.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\347.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\353.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\356.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\389.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\392.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\399.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\409.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\422.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\424.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\453.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\479.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\600.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\604.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\610.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\623.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\633.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\637.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\641.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\643.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\655.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\702.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\707.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\721.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\738.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\741.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\743.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\745.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\748.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\749.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\756.jpg" />
+    <EmbeddedResource Include="BoletoNet\Imagens\barra.gif" />
+    <EmbeddedResource Include="BoletoNet\Imagens\barrainterna.gif" />
+    <EmbeddedResource Include="BoletoNet\Imagens\BoletoBancario.bmp" />
+    <EmbeddedResource Include="BoletoNet\Imagens\corte.gif" />
+    <EmbeddedResource Include="BoletoNet\Imagens\ponto.gif" />
+    <Content Include="BoletoNet\Imagens\logo_anvisa.jpg" />
     <Content Include="Connected Services\serviceRegistroBoleto\CodivaServiceWS.serviceRegistroBoleto.boletoAvulsoRegistradoBBResponse.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Content>
@@ -282,6 +355,7 @@
     <Content Include="Connected Services\serviceRegistroBoleto\CodivaServiceWS.serviceRegistroBoleto.Taxa.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Content>
+    <Content Include="BoletoNet\Boleto\EspecieDocumento\EspecieDocumento.cs.bak" />
     <None Include="Connected Services\serviceRegistroBoleto\configuration91.svcinfo" />
     <None Include="Connected Services\serviceRegistroBoleto\configuration.svcinfo" />
     <None Include="Connected Services\serviceRegistroBoleto\GuiaService1.wsdl" />
@@ -294,6 +368,207 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\NinjectWebCommon.cs" />
+    <Compile Include="BoletoNet\Arquivo\AbstractArquivoRemessa.cs" />
+    <Compile Include="BoletoNet\Arquivo\AbstractArquivoRetorno.cs" />
+    <Compile Include="BoletoNet\Arquivo\AbstractArquivoRetornoGeneric.cs" />
+    <Compile Include="BoletoNet\Arquivo\ArquivoRemessa.cs" />
+    <Compile Include="BoletoNet\Arquivo\ArquivoRemessaCNAB240.cs" />
+    <Compile Include="BoletoNet\Arquivo\ArquivoRemessaCNAB400.cs" />
+    <Compile Include="BoletoNet\Arquivo\ArquivoRetorno.cs" />
+    <Compile Include="BoletoNet\Arquivo\ArquivoRetornoCNAB240.cs" />
+    <Compile Include="BoletoNet\Arquivo\ArquivoRetornoCNAB400.cs" />
+    <Compile Include="BoletoNet\Arquivo\ArquivoRetornoCRB643.cs" />
+    <Compile Include="BoletoNet\Arquivo\CBR643\DetalheCbr643.cs" />
+    <Compile Include="BoletoNet\Arquivo\CBR643\HeaderCbr643.cs" />
+    <Compile Include="BoletoNet\Arquivo\CBR643\LinhaCbr643.cs" />
+    <Compile Include="BoletoNet\Arquivo\CBR643\TrailerCbr643.cs" />
+    <Compile Include="BoletoNet\Arquivo\DetalheRetorno.cs" />
+    <Compile Include="BoletoNet\Arquivo\DetalheRetornoCNAB240.cs" />
+    <Compile Include="BoletoNet\Arquivo\DetalheSegmentoERetornoCNAB240.cs" />
+    <Compile Include="BoletoNet\Arquivo\DetalheSegmentoTRetornoCNAB240.cs" />
+    <Compile Include="BoletoNet\Arquivo\DetalheSegmentoURetornoCNAB240.cs" />
+    <Compile Include="BoletoNet\Arquivo\DetalheSegmentoWRetornoCNAB240.cs" />
+    <Compile Include="BoletoNet\Arquivo\DetalheSegmentoYRetornoCNAB240.cs" />
+    <Compile Include="BoletoNet\Arquivo\HeaderDeArquivoCNAB240.cs" />
+    <Compile Include="BoletoNet\Arquivo\HeaderRetorno.cs" />
+    <Compile Include="BoletoNet\Arquivo\IArquivoRemessa.cs" />
+    <Compile Include="BoletoNet\Arquivo\IArquivoRetorno.cs" />
+    <Compile Include="BoletoNet\Arquivo\LinhaDeArquivoGeradaArgs.cs" />
+    <Compile Include="BoletoNet\Arquivo\LinhaDeArquivoLidaArgs.cs" />
+    <Compile Include="BoletoNet\Arquivo\Reader\TextPosAttribute.cs" />
+    <Compile Include="BoletoNet\Arquivo\Reader\TextPosReader.cs" />
+    <Compile Include="BoletoNet\Banco\AbstractBanco.cs" />
+    <Compile Include="BoletoNet\Banco\Banco.cs" />
+    <Compile Include="BoletoNet\Banco\Banco_Banestes.cs" />
+    <Compile Include="BoletoNet\Banco\Banco_BankBoston.cs" />
+    <Compile Include="BoletoNet\Banco\Banco_Bansirul.cs" />
+    <Compile Include="BoletoNet\Banco\Banco_Basa.cs" />
+    <Compile Include="BoletoNet\Banco\Banco_Bradesco.cs" />
+    <Compile Include="BoletoNet\Banco\Banco_Brasil.cs" />
+    <Compile Include="BoletoNet\Banco\Banco_BRB.cs" />
+    <Compile Include="BoletoNet\Banco\Banco_C6.cs" />
+    <Compile Include="BoletoNet\Banco\Banco_Caixa.cs" />
+    <Compile Include="BoletoNet\Banco\Banco_Cecred.cs" />
+    <Compile Include="BoletoNet\Banco\Banco_CrediSis.cs" />
+    <Compile Include="BoletoNet\Banco\Banco_Daycoval.cs" />
+    <Compile Include="BoletoNet\Banco\Banco_HSBC.cs" />
+    <Compile Include="BoletoNet\Banco\Banco_Itau.cs" />
+    <Compile Include="BoletoNet\Banco\Banco_Maxima.cs" />
+    <Compile Include="BoletoNet\Banco\Banco_Nordeste.cs" />
+    <Compile Include="BoletoNet\Banco\Banco_Real.cs" />
+    <Compile Include="BoletoNet\Banco\Banco_Safra.cs" />
+    <Compile Include="BoletoNet\Banco\Banco_Santander.cs" />
+    <Compile Include="BoletoNet\Banco\Banco_Semear.cs" />
+    <Compile Include="BoletoNet\Banco\Banco_Sicoob.cs" />
+    <Compile Include="BoletoNet\Banco\Banco_Sicredi.cs" />
+    <Compile Include="BoletoNet\Banco\Banco_Sofisa.cs" />
+    <Compile Include="BoletoNet\Banco\Banco_Sudameris.cs" />
+    <Compile Include="BoletoNet\Banco\Banco_Unibanco.cs" />
+    <Compile Include="BoletoNet\Banco\Banco_Unicred.cs" />
+    <Compile Include="BoletoNet\Banco\Banco_Uniprime.cs" />
+    <Compile Include="BoletoNet\Banco\Banco_Votorantim.cs" />
+    <Compile Include="BoletoNet\Banco\Carteiras\BancoCarteiraFactory.cs" />
+    <Compile Include="BoletoNet\Banco\Carteiras\Brasil\Carteira18Brasil.cs" />
+    <Compile Include="BoletoNet\Banco\Carteiras\Brasil\CarteiraBrasil.cs" />
+    <Compile Include="BoletoNet\Banco\Carteiras\IBancoCarteira.cs" />
+    <Compile Include="BoletoNet\Banco\Carteiras\TipoCarteiraAttribute.cs" />
+    <Compile Include="BoletoNet\Banco\IBanco.cs" />
+    <Compile Include="BoletoNet\BoletoImpressao\BoletoBancario.cs" />
+    <Compile Include="BoletoNet\BoletoImpressao\BoletoBancarioDesigner.cs" />
+    <Compile Include="BoletoNet\BoletoImpressao\ImagemCodigoBarraHandler.cs" />
+    <Compile Include="BoletoNet\Boleto\Boleto.cs" />
+    <Compile Include="BoletoNet\Boleto\Boletos.cs" />
+    <Compile Include="BoletoNet\Boleto\Carteira\AbstractCarteira.cs" />
+    <Compile Include="BoletoNet\Boleto\Carteira\Carteira.cs" />
+    <Compile Include="BoletoNet\Boleto\Carteira\Carteiras.cs" />
+    <Compile Include="BoletoNet\Boleto\Carteira\Carteira_BancoBrasil.cs" />
+    <Compile Include="BoletoNet\Boleto\Carteira\Carteira_BankBoston.cs" />
+    <Compile Include="BoletoNet\Boleto\Carteira\Carteira_Caixa.cs" />
+    <Compile Include="BoletoNet\Boleto\Carteira\Carteira_CrediSIS.cs" />
+    <Compile Include="BoletoNet\Boleto\Carteira\Carteira_HSBC.cs" />
+    <Compile Include="BoletoNet\Boleto\Carteira\Carteira_Itau.cs" />
+    <Compile Include="BoletoNet\Boleto\Carteira\Carteira_Santander.cs" />
+    <Compile Include="BoletoNet\Boleto\Carteira\ICarteira.cs" />
+    <Compile Include="BoletoNet\Boleto\Cedente.cs" />
+    <Compile Include="BoletoNet\Boleto\CodigoBarra.cs" />
+    <Compile Include="BoletoNet\Boleto\CodigoLiquidacao\AbstractCodigoLiquidacao.cs" />
+    <Compile Include="BoletoNet\Boleto\CodigoLiquidacao\CodigoLiquidacao.cs" />
+    <Compile Include="BoletoNet\Boleto\CodigoLiquidacao\CodigoLiquidacao_BancoBrasil.cs" />
+    <Compile Include="BoletoNet\Boleto\CodigoLiquidacao\CodigoLiquidacao_Itau.cs" />
+    <Compile Include="BoletoNet\Boleto\CodigoLiquidacao\ICodigoLiquidacao.cs" />
+    <Compile Include="BoletoNet\Boleto\CodigoMovimento\AbstractCodigoMovimento.cs" />
+    <Compile Include="BoletoNet\Boleto\CodigoMovimento\CodigoMovimento.cs" />
+    <Compile Include="BoletoNet\Boleto\CodigoMovimento\CodigoMovimento_BancoBrasil.cs" />
+    <Compile Include="BoletoNet\Boleto\CodigoMovimento\CodigoMovimento_Caixa.cs" />
+    <Compile Include="BoletoNet\Boleto\CodigoMovimento\CodigoMovimento_Cecred.cs" />
+    <Compile Include="BoletoNet\Boleto\CodigoMovimento\CodigoMovimento_Itau.cs" />
+    <Compile Include="BoletoNet\Boleto\CodigoMovimento\CodigoMovimento_Nordeste.cs" />
+    <Compile Include="BoletoNet\Boleto\CodigoMovimento\CodigoMovimento_Sicoob.cs" />
+    <Compile Include="BoletoNet\Boleto\CodigoMovimento\CodigoMovimento_Sicredi.cs" />
+    <Compile Include="BoletoNet\Boleto\CodigoMovimento\ICodigoMovimento.cs" />
+    <Compile Include="BoletoNet\Boleto\CodigoRejeicao\AbstractCodigoRejeicao.cs" />
+    <Compile Include="BoletoNet\Boleto\CodigoRejeicao\CodigoRejeicao.cs" />
+    <Compile Include="BoletoNet\Boleto\CodigoRejeicao\CodigoRejeicao_BancoBrasil.cs" />
+    <Compile Include="BoletoNet\Boleto\CodigoRejeicao\ICodigoRejeicao.cs" />
+    <Compile Include="BoletoNet\Boleto\CodigoTarifas\AbstractCodigoTarifas.cs" />
+    <Compile Include="BoletoNet\Boleto\CodigoTarifas\CodigoTarifas.cs" />
+    <Compile Include="BoletoNet\Boleto\CodigoTarifas\CodigoTarifas_BancoBrasil.cs" />
+    <Compile Include="BoletoNet\Boleto\CodigoTarifas\ICodigoTarifas.cs" />
+    <Compile Include="BoletoNet\Boleto\ContaBancaria.cs" />
+    <Compile Include="BoletoNet\Boleto\DemonstrativoValoresBoleto\GrupoDemonstrativo.cs" />
+    <Compile Include="BoletoNet\Boleto\DemonstrativoValoresBoleto\ItemDemonstrativo.cs" />
+    <Compile Include="BoletoNet\Boleto\Endereco.cs" />
+    <Compile Include="BoletoNet\Boleto\EspecieDocumento\AbstractEspecieDocumento.cs" />
+    <Compile Include="BoletoNet\Boleto\EspecieDocumento\EspecieDocumento.cs" />
+    <Compile Include="BoletoNet\Boleto\EspecieDocumento\EspecieDocumento_BancoBrasil.cs" />
+    <Compile Include="BoletoNet\Boleto\EspecieDocumento\EspecieDocumento_Banestes.cs" />
+    <Compile Include="BoletoNet\Boleto\EspecieDocumento\EspecieDocumento_BankBoston.cs" />
+    <Compile Include="BoletoNet\Boleto\EspecieDocumento\EspecieDocumento_Banrisul.cs" />
+    <Compile Include="BoletoNet\Boleto\EspecieDocumento\EspecieDocumento_Bradesco.cs" />
+    <Compile Include="BoletoNet\Boleto\EspecieDocumento\EspecieDocumento_C6.cs" />
+    <Compile Include="BoletoNet\Boleto\EspecieDocumento\EspecieDocumento_Caixa.cs" />
+    <Compile Include="BoletoNet\Boleto\EspecieDocumento\EspecieDocumento_Cecred.cs" />
+    <Compile Include="BoletoNet\Boleto\EspecieDocumento\EspecieDocumento_CrediSIS.cs" />
+    <Compile Include="BoletoNet\Boleto\EspecieDocumento\EspecieDocumento_Daycoval.cs" />
+    <Compile Include="BoletoNet\Boleto\EspecieDocumento\EspecieDocumento_HSBC.cs" />
+    <Compile Include="BoletoNet\Boleto\EspecieDocumento\EspecieDocumento_Itau.cs" />
+    <Compile Include="BoletoNet\Boleto\EspecieDocumento\EspecieDocumento_Nordeste.cs" />
+    <Compile Include="BoletoNet\Boleto\EspecieDocumento\EspecieDocumento_Real.cs" />
+    <Compile Include="BoletoNet\Boleto\EspecieDocumento\EspecieDocumento_Safra.cs" />
+    <Compile Include="BoletoNet\Boleto\EspecieDocumento\EspecieDocumento_Santander.cs" />
+    <Compile Include="BoletoNet\Boleto\EspecieDocumento\EspecieDocumento_Semear.cs" />
+    <Compile Include="BoletoNet\Boleto\EspecieDocumento\EspecieDocumento_Sicoob.cs" />
+    <Compile Include="BoletoNet\Boleto\EspecieDocumento\EspecieDocumento_Sicredi.cs" />
+    <Compile Include="BoletoNet\Boleto\EspecieDocumento\EspecieDocumento_Sofisa.cs" />
+    <Compile Include="BoletoNet\Boleto\EspecieDocumento\EspecieDocumento_Sudameris.cs" />
+    <Compile Include="BoletoNet\Boleto\EspecieDocumento\EspecieDocumento_Unicred.cs" />
+    <Compile Include="BoletoNet\Boleto\EspecieDocumento\EspecieDocumento_Uniprime.cs" />
+    <Compile Include="BoletoNet\Boleto\EspecieDocumento\EspecieDocumento_Votorantim.cs" />
+    <Compile Include="BoletoNet\Boleto\EspecieDocumento\EspeciesDocumento.cs" />
+    <Compile Include="BoletoNet\Boleto\EspecieDocumento\IEspecieDocumento.cs" />
+    <Compile Include="BoletoNet\Boleto\Instrucao\AbstractInstrucao.cs" />
+    <Compile Include="BoletoNet\Boleto\Instrucao\IInstrucao.cs" />
+    <Compile Include="BoletoNet\Boleto\Instrucao\Instrucao.cs" />
+    <Compile Include="BoletoNet\Boleto\Instrucao\Instrucao_BancoBrasil.cs" />
+    <Compile Include="BoletoNet\Boleto\Instrucao\Instrucao_BancoNordeste.cs" />
+    <Compile Include="BoletoNet\Boleto\Instrucao\Instrucao_Banestes.cs" />
+    <Compile Include="BoletoNet\Boleto\Instrucao\Instrucao_BankBoston.cs" />
+    <Compile Include="BoletoNet\Boleto\Instrucao\Instrucao_Banrisul.cs" />
+    <Compile Include="BoletoNet\Boleto\Instrucao\Instrucao_Bradesco.cs" />
+    <Compile Include="BoletoNet\Boleto\Instrucao\Instrucao_BRB.cs" />
+    <Compile Include="BoletoNet\Boleto\Instrucao\Instrucao_C6.cs" />
+    <Compile Include="BoletoNet\Boleto\Instrucao\Instrucao_Caixa.cs" />
+    <Compile Include="BoletoNet\Boleto\Instrucao\Instrucao_Cecred.cs" />
+    <Compile Include="BoletoNet\Boleto\Instrucao\Instrucao_CrediSIS.cs" />
+    <Compile Include="BoletoNet\Boleto\Instrucao\Instrucao_HSBC.cs" />
+    <Compile Include="BoletoNet\Boleto\Instrucao\Instrucao_Itau.cs" />
+    <Compile Include="BoletoNet\Boleto\Instrucao\Instrucao_Real.cs" />
+    <Compile Include="BoletoNet\Boleto\Instrucao\Instrucao_Safra.cs" />
+    <Compile Include="BoletoNet\Boleto\Instrucao\Instrucao_Santander.cs" />
+    <Compile Include="BoletoNet\Boleto\Instrucao\Instrucao_Sicoob.cs" />
+    <Compile Include="BoletoNet\Boleto\Instrucao\Instrucao_Sicredi.cs" />
+    <Compile Include="BoletoNet\Boleto\Instrucao\Instrucao_Sudameris.cs" />
+    <Compile Include="BoletoNet\Boleto\Instrucao\Instrucao_Unicred.cs" />
+    <Compile Include="BoletoNet\Boleto\Instrucao\Instrucao_Uniprime.cs" />
+    <Compile Include="BoletoNet\Boleto\Instrucao\Instrucao_Votorantim.cs" />
+    <Compile Include="BoletoNet\Boleto\Instrucao\Instrucoes.cs" />
+    <Compile Include="BoletoNet\Boleto\Remessa.cs" />
+    <Compile Include="BoletoNet\Boleto\Sacado\InformacoesSacado.cs" />
+    <Compile Include="BoletoNet\Boleto\Sacado\InfoSacado.cs" />
+    <Compile Include="BoletoNet\Boleto\Sacado\Sacado.cs" />
+    <Compile Include="BoletoNet\EDI\Banco\TArquivoBanrisulRetorno_EDI.cs" />
+    <Compile Include="BoletoNet\EDI\Banco\TArquivoCaixaRetorno_EDI.cs" />
+    <Compile Include="BoletoNet\EDI\Banco\TRegistroEDI_BancoBrasil_Retorno.cs" />
+    <Compile Include="BoletoNet\EDI\Banco\TRegistroEDI_Banco_Nordeste_Retorno.cs" />
+    <Compile Include="BoletoNet\EDI\Banco\TRegistroEDI_Banrisul_Retorno.cs" />
+    <Compile Include="BoletoNet\EDI\Banco\TRegistroEDI_Caixa_Retorno.cs" />
+    <Compile Include="BoletoNet\EDI\Banco\TRegistroEDI_Cecred_Retorno.cs" />
+    <Compile Include="BoletoNet\EDI\Banco\TRegistroEDI_Sicredi_Retorno.cs" />
+    <Compile Include="BoletoNet\EDI\EDIBasicTypes.cs" />
+    <Compile Include="BoletoNet\EDI\EDIFile.cs" />
+    <Compile Include="BoletoNet\Enums\Bancos.cs" />
+    <Compile Include="BoletoNet\Enums\CategoriaLancamento.cs" />
+    <Compile Include="BoletoNet\Enums\Extensions.cs" />
+    <Compile Include="BoletoNet\Enums\IsencaoCpmf.cs" />
+    <Compile Include="BoletoNet\Enums\TipoArquivo.cs" />
+    <Compile Include="BoletoNet\Enums\TipoComplementoLancamento.cs" />
+    <Compile Include="BoletoNet\Enums\TipoEmissao.cs" />
+    <Compile Include="BoletoNet\Enums\TipoInscricao.cs" />
+    <Compile Include="BoletoNet\Enums\TipoLancamento.cs" />
+    <Compile Include="BoletoNet\Enums\TipoMovimento.cs" />
+    <Compile Include="BoletoNet\Enums\TipoOcorrenciaRemessa.cs" />
+    <Compile Include="BoletoNet\Enums\TipoOcorrenciaRetorno.cs" />
+    <Compile Include="BoletoNet\Enums\TipoPessoa.cs" />
+    <Compile Include="BoletoNet\Excecoes\BoletoNetException.cs" />
+    <Compile Include="BoletoNet\Excecoes\NossoNumeroInvalidoException.cs" />
+    <Compile Include="BoletoNet\Excecoes\TamanhoNossoNumeroInvalidoException.cs" />
+    <Compile Include="BoletoNet\Html.Designer.cs" />
+    <Compile Include="BoletoNet\Util\BarCodeBase.cs" />
+    <Compile Include="BoletoNet\Util\C2of5i.cs" />
+    <Compile Include="BoletoNet\Util\DateInterval.cs" />
+    <Compile Include="BoletoNet\Util\Extensions.cs" />
+    <Compile Include="BoletoNet\Util\LeitorLinhaPosicao.cs" />
+    <Compile Include="BoletoNet\Util\Utils.cs" />
     <Compile Include="Connected Services\serviceRegistroBoleto\Reference.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

@@ -11,6 +11,7 @@ using System.Linq;
 using System.Reflection;
 using System.Web;
 using System.Web.Services;
+using System.Web.Services.Protocols;
 using static CodivaServiceWS.Enum.Enum;
 
 namespace CodivaServiceWS
@@ -26,9 +27,12 @@ namespace CodivaServiceWS
         public IDebitoService _debitoService { get; set; }
 
         [WebMethod]
-        public IncluirDebitoResponseDto IncluirDebito(string cpf_cnpj, string sistemaOrigem, string tipoDebito, string numDocumento, string anoDocumento, string numProcesso, string gerencia, string nomePessoa, string receita, int unidadeArrecadadora, string dataMulta, string valorMulta)
+        public IncluirDebitoResponseDto[] IncluirDebito(string cpf_cnpj, string sistemaOrigem, string tipoDebito, string numDocumento, string anoDocumento, string numProcesso, string gerencia, string nomePessoa, string receita, int unidadeArrecadadora, string dataMulta, string valorMulta)
+        //public IncluirDebitoResponseDto IncluirDebito(IncluirDebitoRequestDto incluirDebitoRequestDto)
         {
             IncluirDebitoResponseDto incluirDebitoResponseDto = new IncluirDebitoResponseDto();
+
+            IncluirDebitoResponseDto[] retorno = new IncluirDebitoResponseDto[1];
 
             try
             {
@@ -49,34 +53,34 @@ namespace CodivaServiceWS
                     pessoaAutuadaDto = _pessoaAutuadaService.ObterDadosPessoaJuridicaBaseDbCorporativo(cpf_cnpj);
 
                 if (pessoaAutuadaDto == null)
-                    return new IncluirDebitoResponseDto();
+                    return retorno;
 
                 if (!_pessoaAutuadaService.VerificarExistenciaPessoaAutuada(cpf_cnpj))
                 {
                     if (!_pessoaAutuadaService.IncluirPessoaAutuada(cpf_cnpj, pessoaAutuadaDto.NOME_RAZAOSOCIAL, pessoaAutuadaDto.ENDERECO, pessoaAutuadaDto.CEP, pessoaAutuadaDto.NM_CIDADE, pessoaAutuadaDto.COD_CIDADE))
-                        return incluirDebitoResponseDto;
+                        return retorno;
                 }
                 else
                 {
                     if (!_pessoaAutuadaService.AtualizarPessoaAutuada(cpf_cnpj, pessoaAutuadaDto.NOME_RAZAOSOCIAL, pessoaAutuadaDto.ENDERECO, pessoaAutuadaDto.CEP, pessoaAutuadaDto.NM_CIDADE, pessoaAutuadaDto.COD_CIDADE))
-                        return incluirDebitoResponseDto;
+                        return retorno;
                 }
 
                 if (_debitoService.VerificaSeDebitoEstaCadastrado(tipoDebito, numDocumento, anoDocumento, unidadeArrecadadora))
-                    return incluirDebitoResponseDto;
+                    return retorno;
 
                 //return _debitoService.IncluirDebito(cpf_cnpj, tipoDebito, numDocumento, anoDocumento, numProcesso, gerencia, nomePessoa, receita, unidadeArrecadadora, dataMulta, valorMulta);
 
                 if (!_debitoService.IncluirDebito(cpf_cnpj, tipoDebito, numDocumento, anoDocumento, numProcesso, gerencia, nomePessoa, receita, unidadeArrecadadora, dataMulta, valorMulta))
-                    return incluirDebitoResponseDto;
+                    return retorno;
 
                 var codigoDebito = _debitoService.ObterCodigoDebito(tipoDebito, numDocumento, anoDocumento, unidadeArrecadadora);
 
                 if (codigoDebito == 0)
-                    return incluirDebitoResponseDto;
+                    return retorno;
 
                 if (!_debitoService.IncluirHistoricoSituacaoDebito(codigoDebito, tipoDebito, numDocumento, anoDocumento, unidadeArrecadadora))
-                    return incluirDebitoResponseDto;
+                    return retorno;
 
                 //var nossoNumero = _debitoService.CalculaNossoNumero("11", receita, "0");
 
@@ -89,15 +93,13 @@ namespace CodivaServiceWS
                 incluirDebitoResponseDto.NumeroFistel = "50";
                 incluirDebitoResponseDto.NumeroSequencial = 20;
 
-                return incluirDebitoResponseDto;
+                retorno[0] = incluirDebitoResponseDto;
 
-                //return true;
+                return retorno;
             }
             catch (Exception ex)
             {
-                return incluirDebitoResponseDto;
-
-                //return false;
+                return retorno;
             }
         }
 

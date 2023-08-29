@@ -1,13 +1,19 @@
-﻿using CodivaServiceWS.Dapper.Interface;
+﻿using BoletoNet;
+using CodivaServiceWS.Dapper.Interface;
 using CodivaServiceWS.Service.Interface;
 using IronPdf;
 using Ninject;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.EnterpriseServices.Internal;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
+using System.Runtime.ConstrainedExecution;
 using static CodivaServiceWS.Enum.Enum;
 
 namespace CodivaServiceWS.Service.Implementation
@@ -88,6 +94,8 @@ namespace CodivaServiceWS.Service.Implementation
         {
             try
             {
+                List<BoletoBancario> lstBoletos = new List<BoletoBancario>();
+
                 string urlBoleto = string.Empty;
 
                 var dadosDebito = _debitoDapper.ObterDadosDebito(codigoDebito);
@@ -104,8 +112,8 @@ namespace CodivaServiceWS.Service.Implementation
                 parametrosRequisicao.numeroCarteira = "17";
                 parametrosRequisicao.numeroVariacaoCarteira = "477";
                 parametrosRequisicao.codigoModalidadeTitulo = "1";
-                parametrosRequisicao.dataEmissaoTitulo = "07.12.2022";
-                parametrosRequisicao.dataVencimentoTitulo = "20.08.2023";
+                parametrosRequisicao.dataEmissaoTitulo = "23.06.2023";
+                parametrosRequisicao.dataVencimentoTitulo = "09.09.2023";
                 parametrosRequisicao.valorOriginalTitulo = valorMulta;
                 parametrosRequisicao.codigoTipoDesconto = "1";
                 parametrosRequisicao.codigoTipoJuroMora = "0";
@@ -126,33 +134,112 @@ namespace CodivaServiceWS.Service.Implementation
                 parametrosRequisicao.codigoChaveUsuario = "1";
                 parametrosRequisicao.codigoTipoCanalSolicitacao = "5";
                 parametrosRequisicao.valorDescontoTitulo = valorDesconto.ToString();
-                parametrosRequisicao.dataDescontoTitulo = "25.07.2023";
+                parametrosRequisicao.dataDescontoTitulo = "06.09.2023";
 
                 var retorno = guiaWS.boletoAvulsoRegistradoBB(parametrosRequisicao);
 
                 if (retorno != null && retorno.guiaArrecad != null)
                 {
-                    HttpClient client = new HttpClient();
-                    client.BaseAddress = new Uri("https://unigru-pre.anvisa.gov.br");
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    string convenio = "2677473";
 
-                    HttpResponseMessage response = client.GetAsync($"/unigru/guia/{retorno.guiaArrecad.ano.ToString()}/{retorno.guiaArrecad.numero.ToString()}").Result;
-
-                    if (response.IsSuccessStatusCode)
+                    var contaBancaria = new ContaBancaria()
                     {
-                        var renderer = new ChromePdfRenderer();
+                        Agencia = "4175",
+                        DigitoAgencia = "2",
+                        Conta = "6141",
+                        DigitoConta = "5",
+                        OperacaConta = "019"
+                    };
 
-                        var strContent = response.Content.ReadAsStringAsync().Result;
+                    var cedente = new Cedente()
+                    {
+                        Codigo = convenio, //ced.ID.ToString().PadLeft(7, '0'),
+                                           //Convenio = Convert.ToInt32(convenio),
+                        CPFCNPJ = parametrosRequisicao.numeroInscricaoPagador,
+                        Nome = "AGÊNCIA NACIONAL DE VIGILÂNCIA SANITÁRIA - ANVISA",
+                        ContaBancaria = contaBancaria
+                    };
 
-                        var pdf = renderer.RenderHtmlAsPdf(strContent);
+                    var sacado = new Sacado()
+                    {
+                        CPFCNPJ = parametrosRequisicao.numeroInscricaoPagador,
+                        Nome = parametrosRequisicao.nomePagador,
+                        Endereco = new Endereco()
+                        {
+                            End = dadosDebito.Endereco,
+                            Bairro = dadosDebito.Bairro,
+                            Cidade = dadosDebito.Cidade,
+                            UF = dadosDebito.UF,
+                            CEP = dadosDebito.Cep
+                        }
+                    };
 
-                        pdf.SaveAs($"C:\\Anvisa\\CodivaServiceWS\\CodivaServiceWS\\CodivaServiceWS\\Boleto\\Boleto_{retorno.guiaArrecad.numero.ToString()}.pdf");
+                    var boleto = new Boleto()
+                    {
+                        ContaBancaria = contaBancaria,
+                        DataVencimento = Convert.ToDateTime("09/09/2023"),
+                        ValorBoleto = Convert.ToDecimal(valorMulta),
+                        NossoNumero = "26774730000000085",
+                        NumeroDocumento = "0000000085",
+                        Carteira = "18",
+                        Cedente = cedente,
+                        Sacado = sacado,
+                        EspecieDocumento = new EspecieDocumento_BancoBrasil("4"),
+                        LocalPagamento = "PAGÁVEL EM QUALQUER BANCO ATÉ O VENCIMENTO",
+                        Instrucoes = new List<IInstrucao>() { new Instrucao_BancoBrasil() { Descricao = "Desconto de 20% se pago até 20 dias a contar da data de recebimento desta notificação, nos termos do art. 21 da Lei n. 6.437/77" } },
+                        DataDesconto = CalculaDataLimitePagamentoDesconto(),
+                        ValorDesconto = Convert.ToDecimal(valorDesconto)
+                    };
+
+                    var boleto_bancario = new BoletoBancario()
+                    {
+                        CodigoBanco = 001,
+                        Boleto = boleto,
+                        MostrarCodigoCarteira = false,
+                        MostrarComprovanteEntrega = false
+                    };
+
+                    boleto_bancario.Boleto.Valida();
+
+                    //boleto_bancario.MontaHtmlNoArquivoLocal("C:\\Anvisa\\CodivaServiceWS\\CodivaServiceWS\\CodivaServiceWS\\Boleto\\Teste.html", parametrosRequisicao.nomePagador, parametrosRequisicao.numeroInscricaoPagador);
+
+                    lstBoletos.Add(boleto_bancario);
+
+                    var bytes = boleto_bancario.MontaBytesListaBoletosPDF(lstBoletos);
+
+                    string diretorioBoleto = System.Web.HttpContext.Current.Server.MapPath("./Boleto");
+
+                    if (!Directory.Exists(diretorioBoleto))
+                        Directory.CreateDirectory(diretorioBoleto);
+
+                    string pathBoleto = Path.Combine(diretorioBoleto, "Boleto.pdf");
+
+                    using (var fs = new FileStream(pathBoleto, FileMode.Create, FileAccess.Write))
+                    {
+                        fs.Write(bytes, 0, bytes.Length);
                     }
+
+                    //HttpClient client = new HttpClient();
+                    //client.BaseAddress = new Uri("https://unigru-pre.anvisa.gov.br");
+                    //client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                    //HttpResponseMessage response = client.GetAsync($"/unigru/guia/{retorno.guiaArrecad.ano.ToString()}/{retorno.guiaArrecad.numero.ToString()}").Result;
+
+                    //if (response.IsSuccessStatusCode)
+                    //{
+                    //    var renderer = new ChromePdfRenderer();
+
+                    //    var strContent = response.Content.ReadAsStringAsync().Result;
+
+                    //    var pdf = renderer.RenderHtmlAsPdf(strContent);
+
+                    //    pdf.SaveAs($"C:\\Anvisa\\CodivaServiceWS\\CodivaServiceWS\\CodivaServiceWS\\Boleto\\Boleto_{retorno.guiaArrecad.numero.ToString()}.pdf");
+                    //}
                 }
 
-                if(retorno != null && retorno.guiaArrecad != null)
+                if (retorno != null && retorno.guiaArrecad != null)
                     urlBoleto = $"https://unigru-pre.anvisa.gov.br/unigru/guia/{retorno.guiaArrecad.ano.ToString()}/{retorno.guiaArrecad.numero.ToString()}";
-                
+
                 return urlBoleto;
             }
             catch (Exception ex)
@@ -160,6 +247,11 @@ namespace CodivaServiceWS.Service.Implementation
                 return "";
             }
         }
+
+        //private void GerarBoleto(Cedente cedente, Boleto boleto, Sacado sacado, Instrucao_BancoBrasil instrucoes)
+        //{
+
+        //}
 
         private String getNumConvenio(String sTpDebito, String sFormaPagamento)
         {
@@ -183,6 +275,54 @@ namespace CodivaServiceWS.Service.Implementation
                 return "108";
             else
                 return "";
+        }
+
+        private DateTime CalculaDataLimitePagamentoDesconto()
+        {
+            DateTime diaUtilSeguinteDataEmissao = DateTime.Now.DayOfWeek == DayOfWeek.Friday ?
+                                                  DateTime.Now.AddDays(3) :
+                                                  DateTime.Now.DayOfWeek == DayOfWeek.Saturday ?
+                                                  DateTime.Now.AddDays(2) :
+                                                  DateTime.Now.AddDays(1);
+
+            var dataLimitePagamentoComDesconto = diaUtilSeguinteDataEmissao.AddDays(20);
+
+            DateTime ultimoDiaDoMes = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month));
+
+            var ultimoDiaUtilDoMes = ultimoDiaDoMes.DayOfWeek == DayOfWeek.Saturday ?
+                                     ultimoDiaDoMes.AddDays(-1) :
+                                     ultimoDiaDoMes.DayOfWeek == DayOfWeek.Sunday ?
+                                     ultimoDiaDoMes.AddDays(-2) :
+                                     ultimoDiaDoMes;
+
+            if (dataLimitePagamentoComDesconto > ultimoDiaUtilDoMes)
+                dataLimitePagamentoComDesconto = ultimoDiaUtilDoMes;
+
+            return dataLimitePagamentoComDesconto;
+        }
+
+
+        public static DateTime diaUtil(DateTime dt)
+        {
+            while (true)
+            {
+                if (dt.DayOfWeek == DayOfWeek.Saturday)
+                {
+                    dt = dt.AddDays(2);
+                    return diaUtil(dt);
+                }
+                else if (dt.DayOfWeek == DayOfWeek.Sunday)
+                {
+                    dt = dt.AddDays(1);
+                    return diaUtil(dt);
+                }
+                //else if (Feriado(dt) == true)
+                //{
+                //    dt = dt.AddDays(1);
+                //    return diaUtil(dt);
+                //}
+                else return dt;
+            }
         }
     }
 }
