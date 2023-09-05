@@ -36,7 +36,7 @@ namespace CodivaServiceWS.Dapper.Implementation
                                     VL_ORIGINAL,
                                     VL_SALDO,
                                     DT_ALTERACAO,
-                                    DT_VENCIMENTO
+                                    DT_VENCIMENTO                                    
                                 )
                                 VALUES
                                 (

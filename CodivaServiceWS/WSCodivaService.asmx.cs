@@ -19,7 +19,7 @@ namespace CodivaServiceWS
     [WebService(Namespace = "http://tempuri.org/")]
     [WebServiceBinding(ConformsTo = WsiProfiles.BasicProfile1_1)]
     [System.ComponentModel.ToolboxItem(false)]
-    public class WSCodivaService : WebServiceBase
+    public class WSCodivaService : WebServiceBase    
     {
         [Inject]
         public IPessoaAutuadaService _pessoaAutuadaService { get; set; }
@@ -27,12 +27,10 @@ namespace CodivaServiceWS
         public IDebitoService _debitoService { get; set; }
 
         [WebMethod]
-        public IncluirDebitoResponseDto[] IncluirDebito(string cpf_cnpj, string sistemaOrigem, string tipoDebito, string numDocumento, string anoDocumento, string numProcesso, string gerencia, string nomePessoa, string receita, int unidadeArrecadadora, string dataMulta, string valorMulta)
+        public IncluirDebitoResponseDto IncluirDebito(string cpf_cnpj, string sistemaOrigem, string tipoDebito, string numDocumento, string anoDocumento, string numProcesso, string gerencia, string nomePessoa, string receita, int unidadeArrecadadora, string dataMulta, string valorMulta)
         //public IncluirDebitoResponseDto IncluirDebito(IncluirDebitoRequestDto incluirDebitoRequestDto)
         {
             IncluirDebitoResponseDto incluirDebitoResponseDto = new IncluirDebitoResponseDto();
-
-            IncluirDebitoResponseDto[] retorno = new IncluirDebitoResponseDto[1];
 
             try
             {
@@ -53,34 +51,32 @@ namespace CodivaServiceWS
                     pessoaAutuadaDto = _pessoaAutuadaService.ObterDadosPessoaJuridicaBaseDbCorporativo(cpf_cnpj);
 
                 if (pessoaAutuadaDto == null)
-                    return retorno;
+                    return incluirDebitoResponseDto;
 
                 if (!_pessoaAutuadaService.VerificarExistenciaPessoaAutuada(cpf_cnpj))
                 {
                     if (!_pessoaAutuadaService.IncluirPessoaAutuada(cpf_cnpj, pessoaAutuadaDto.NOME_RAZAOSOCIAL, pessoaAutuadaDto.ENDERECO, pessoaAutuadaDto.CEP, pessoaAutuadaDto.NM_CIDADE, pessoaAutuadaDto.COD_CIDADE))
-                        return retorno;
+                        return incluirDebitoResponseDto;
                 }
                 else
                 {
                     if (!_pessoaAutuadaService.AtualizarPessoaAutuada(cpf_cnpj, pessoaAutuadaDto.NOME_RAZAOSOCIAL, pessoaAutuadaDto.ENDERECO, pessoaAutuadaDto.CEP, pessoaAutuadaDto.NM_CIDADE, pessoaAutuadaDto.COD_CIDADE))
-                        return retorno;
+                        return incluirDebitoResponseDto;
                 }
 
                 if (_debitoService.VerificaSeDebitoEstaCadastrado(tipoDebito, numDocumento, anoDocumento, unidadeArrecadadora))
-                    return retorno;
-
-                //return _debitoService.IncluirDebito(cpf_cnpj, tipoDebito, numDocumento, anoDocumento, numProcesso, gerencia, nomePessoa, receita, unidadeArrecadadora, dataMulta, valorMulta);
+                    return incluirDebitoResponseDto;
 
                 if (!_debitoService.IncluirDebito(cpf_cnpj, tipoDebito, numDocumento, anoDocumento, numProcesso, gerencia, nomePessoa, receita, unidadeArrecadadora, dataMulta, valorMulta))
-                    return retorno;
+                    return incluirDebitoResponseDto;
 
                 var codigoDebito = _debitoService.ObterCodigoDebito(tipoDebito, numDocumento, anoDocumento, unidadeArrecadadora);
 
                 if (codigoDebito == 0)
-                    return retorno;
+                    return incluirDebitoResponseDto;
 
                 if (!_debitoService.IncluirHistoricoSituacaoDebito(codigoDebito, tipoDebito, numDocumento, anoDocumento, unidadeArrecadadora))
-                    return retorno;
+                    return incluirDebitoResponseDto;
 
                 //var nossoNumero = _debitoService.CalculaNossoNumero("11", receita, "0");
 
@@ -93,13 +89,11 @@ namespace CodivaServiceWS
                 incluirDebitoResponseDto.NumeroFistel = "50";
                 incluirDebitoResponseDto.NumeroSequencial = 20;
 
-                retorno[0] = incluirDebitoResponseDto;
-
-                return retorno;
+                return incluirDebitoResponseDto;
             }
             catch (Exception ex)
             {
-                return retorno;
+                return incluirDebitoResponseDto;
             }
         }
 
@@ -124,47 +118,5 @@ namespace CodivaServiceWS
 
             sw.Close();
         }
-
-        //[WebMethod]
-        //public bool IncluirPessoaAutuada(string cpf_cnpj)
-        //{
-        //    try
-        //    {
-        //        PessoaAutuadaDto pessoaAutuadaDto = new PessoaAutuadaDto();
-
-        //        if (string.IsNullOrEmpty(cpf_cnpj))
-        //            return false;
-
-        //        if (cpf_cnpj.Length == (int)TipoPessoa.PessoaFisica)
-        //            pessoaAutuadaDto = _pessoaAutuadaService.ObterDadosPessoaFisicaBaseDbCorporativo(cpf_cnpj);
-        //        else
-        //            pessoaAutuadaDto = _pessoaAutuadaService.ObterDadosPessoaJuridicaBaseDbCorporativo(cpf_cnpj);
-
-        //        //if (!_pessoaAutuadaService.ValidaPessoaAutuada(cpf_cnpj, pessoaAutuadaDto.NOME_RAZAOSOCIAL, pessoaAutuadaDto.ENDERECO, pessoaAutuadaDto.CEP, pessoaAutuadaDto.CIDADE))
-        //        //    return false;
-
-        //        if (!_pessoaAutuadaService.VerificarExistenciaPessoaAutuada(cpf_cnpj))
-        //        {
-        //            if (_pessoaAutuadaService.IncluirPessoaAutuada(cpf_cnpj, pessoaAutuadaDto.NOME_RAZAOSOCIAL, pessoaAutuadaDto.ENDERECO, pessoaAutuadaDto.CEP, pessoaAutuadaDto.NM_CIDADE, pessoaAutuadaDto.COD_CIDADE))
-        //            {
-        //                var coSeqPessoaDevedora = _pessoaAutuadaService.ObterCodigoPessoaAutuada(cpf_cnpj);
-
-        //                return true;
-        //            }
-        //            else
-        //            {
-        //                return false;
-        //            }
-        //        }
-        //        else
-        //        {
-        //            return _pessoaAutuadaService.AtualizarPessoaAutuada(cpf_cnpj, pessoaAutuadaDto.NOME_RAZAOSOCIAL, pessoaAutuadaDto.ENDERECO, pessoaAutuadaDto.CEP, pessoaAutuadaDto.NM_CIDADE, pessoaAutuadaDto.COD_CIDADE);
-        //        }
-        //    }
-        //    catch (Exception)
-        //    {
-        //        return false;
-        //    }
-        //}
     }
 }
