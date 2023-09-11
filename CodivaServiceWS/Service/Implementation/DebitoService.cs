@@ -237,8 +237,8 @@ namespace CodivaServiceWS.Service.Implementation
                     //}
                 }
 
-                if (retorno != null && retorno.guiaArrecad != null)
-                    urlBoleto = $"https://unigru-pre.anvisa.gov.br/unigru/guia/{retorno.guiaArrecad.ano.ToString()}/{retorno.guiaArrecad.numero.ToString()}";
+                //if (retorno != null && retorno.guiaArrecad != null)
+                //    urlBoleto = $"https://unigru-pre.anvisa.gov.br/unigru/guia/{retorno.guiaArrecad.ano.ToString()}/{retorno.guiaArrecad.numero.ToString()}";
 
                 return urlBoleto;
             }

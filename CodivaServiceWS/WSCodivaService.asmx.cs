@@ -27,8 +27,7 @@ namespace CodivaServiceWS
         public IDebitoService _debitoService { get; set; }
 
         [WebMethod]
-        public IncluirDebitoResponseDto IncluirDebito(string cpf_cnpj, string sistemaOrigem, string tipoDebito, string numDocumento, string anoDocumento, string numProcesso, string gerencia, string nomePessoa, string receita, int unidadeArrecadadora, string dataMulta, string valorMulta)
-        //public IncluirDebitoResponseDto IncluirDebito(IncluirDebitoRequestDto incluirDebitoRequestDto)
+        public IncluirDebitoResponseDto IncluirDebito(string cpf_cnpj, string sistemaOrigem, string tipoDebito, string numDocumento, string anoDocumento, string numProcesso, string gerencia, string nomePessoa, string receita, int unidadeArrecadadora, string dataMulta, string valorMulta, string dataVencimento)
         {
             IncluirDebitoResponseDto incluirDebitoResponseDto = new IncluirDebitoResponseDto();
 
