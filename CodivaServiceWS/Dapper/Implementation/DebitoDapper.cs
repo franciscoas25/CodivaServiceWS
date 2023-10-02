@@ -9,16 +9,18 @@ using System.Configuration;
 using System.Data;
 using System.Data.OracleClient;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Web;
 using static CodivaServiceWS.Enum.Enum;
 
 namespace CodivaServiceWS.Dapper.Implementation
 {
     public class DebitoDapper : IDebitoDapper
     {
-        public bool IncluirDebito(int codPessoaDevedora, string receita, int codStatusDebito, int unidadeArrecadadora, string anoDocumento, string numDocumento, string numProcesso, int tipoDebito, string valorMulta)
+        public bool IncluirDebito(int codPessoaDevedora, string receita, int codStatusDebito, int unidadeArrecadadora, string anoDocumento, string numDocumento, string numProcesso, int tipoDebito, string dataMulta, string valorMulta)
         {
             using (IDbConnection connection = CodivaServiceConnection.GetConnection())
             {
@@ -35,8 +37,10 @@ namespace CodivaServiceWS.Dapper.Implementation
                                     TP_DEBITO,
                                     VL_ORIGINAL,
                                     VL_SALDO,
+                                    VL_DESCONTO,
                                     DT_ALTERACAO,
-                                    DT_VENCIMENTO                                    
+                                    DT_VENCIMENTO, 
+                                    DT_INICIAL
                                 )
                                 VALUES
                                 (
@@ -51,8 +55,10 @@ namespace CodivaServiceWS.Dapper.Implementation
                                     {tipoDebito},
                                     {valorMulta},
                                     500,
+                                    0,
                                     to_date('{DateTime.Now}', 'dd/mm/yyyy HH24:mi:ss'),
-                                    to_date('01/01/2999', 'dd/mm/yyyy HH24:mi:ss')
+                                    to_date('01/01/2999', 'dd/mm/yyyy HH24:mi:ss'),
+                                    to_date('{dataMulta}', 'dd/mm/yyyy HH24:mi:ss')
                                 )";
 
                 var result = connection.Execute(sql);
@@ -149,7 +155,7 @@ namespace CodivaServiceWS.Dapper.Implementation
                 parameters.Add("@sProxNossoNum", dbType: DbType.Decimal, direction: ParameterDirection.Output);
 
                 connection.Execute("DBCODIVA.CALCULANOSSONUM", parameters, commandType: CommandType.StoredProcedure);
-
+                
                 return parameters.Get<decimal>("@sProxNossoNum");
             }
         }
@@ -188,6 +194,55 @@ namespace CodivaServiceWS.Dapper.Implementation
                 var result = connection.QueryFirstOrDefault<DadosDebito>(sql);
 
                 return result;
+            }
+        }
+
+        public bool IncluirParcelaDebito(int codigoDebito, string nossoNumero, string dataVencimento, string valorMulta)
+        {
+            using (IDbConnection connection = CodivaServiceConnection.GetConnection2())
+            {
+                string sql = $@"INSERT INTO DBCODIVA.TB_PARCELA
+                                (
+                                    CO_DEBITO,    
+                                    NU_PARCELAMENTO,
+                                    NU_PARCELA,
+                                    CO_STATUS_PARCELA,
+                                    NU_NOSSO_NUMERO,
+                                    DT_VENCIMENTO,
+                                    VL_PARCELA,
+                                    NU_ORDEM_PARCELA,
+                                    DT_ALTERACAO
+                                )
+                                VALUES
+                                (
+                                    {codigoDebito},
+                                    0,
+                                    1,
+                                    0,
+                                    '{nossoNumero}',
+                                    to_date('{dataVencimento}', 'dd/mm/yyyy HH24:mi:ss'),
+                                    {valorMulta},
+                                    0,
+                                    to_date('{DateTime.Now}', 'dd/mm/yyyy HH24:mi:ss')
+                                )";
+                
+                var result = connection.Execute(sql);
+
+                return result > 0;
+            }
+        }
+
+        public bool AtualizarSituacaoDebito(int codigoDebito, int codigoSituacao)
+        {
+            using (IDbConnection connection = CodivaServiceConnection.GetConnection2())
+            {
+                string sql = $@"UPDATE DBCODIVA.TB_DEBITO
+                                SET CO_STATUS_DEBITO = {codigoSituacao} 
+                                WHERE CO_SEQ_DEBITO = {codigoDebito} ";
+
+                var result = connection.Execute(sql);
+
+                return result > 0;
             }
         }
     }

@@ -15,6 +15,9 @@ using System.Net.Http.Headers;
 using System.Reflection;
 using System.Runtime.ConstrainedExecution;
 using static CodivaServiceWS.Enum.Enum;
+using BrazilHolidays;
+using BrazilHolidays.Net;
+using System.Web;
 
 namespace CodivaServiceWS.Service.Implementation
 {
@@ -32,7 +35,7 @@ namespace CodivaServiceWS.Service.Implementation
 
             var codTipoDebito = tipoDebito.ToLower() == TipoDebito.AutoInfracao.GetType().GetMember(TipoDebito.AutoInfracao.ToString()).First().GetCustomAttribute<DescriptionAttribute>().Description.ToLower() ? 1 : 14;
 
-            return _debitoDapper.IncluirDebito(codigoPessoaDevedora, receita, 0, unidadeArrecadadora, anoDocumento, numDocumento, numProcesso, codTipoDebito, valorMulta);
+            return _debitoDapper.IncluirDebito(codigoPessoaDevedora, receita, 0, unidadeArrecadadora, anoDocumento, numDocumento, numProcesso, codTipoDebito, dataMulta, valorMulta);
         }
 
         public bool AlterarDebito(int codigoDebito, string anoDocumento, string numDocumento, string numProcesso, string valorMulta, string dataVencimento)
@@ -100,7 +103,13 @@ namespace CodivaServiceWS.Service.Implementation
 
                 var dadosDebito = _debitoDapper.ObterDadosDebito(codigoDebito);
 
-                string instrucoes = $"Cota Única[br][br]Não receber após o vencimento.[br][br]Código do Débito: ' {codigoDebito.ToString()} '[br]Processo nº: {dadosDebito.NumProcesso} [br][br]Dúvidas: Central de Atendimento: 0800 642 9782";
+                //Atualiza a situacao do debito para 3 - Notificado Administrativamente
+                var statusAtualizacaoDebito = _debitoDapper.AtualizarSituacaoDebito(codigoDebito, 3);
+
+                //Atualiza o historico de alteracoes
+                var historicoSituacao = _debitoDapper.IncluirHistoricoSituacaoDebito(codigoDebito, 3, "PAULO.ALBUQUERQUE");
+
+                string instrucoes = $"Cota Única[br][br]Não receber após o vencimento.[br][br]Código do Débito: {codigoDebito} [br]Processo nº: {dadosDebito.NumProcesso} [br][br]Dúvidas: Central de Atendimento: 0800 642 9782";
 
                 serviceRegistroBoleto.requisicaoBoletoRegistradoAvulso parametrosRequisicao = new serviceRegistroBoleto.requisicaoBoletoRegistradoAvulso();
                 serviceRegistroBoleto.GuiaWebServiceClient guiaWS = new serviceRegistroBoleto.GuiaWebServiceClient();
@@ -113,7 +122,7 @@ namespace CodivaServiceWS.Service.Implementation
                 parametrosRequisicao.numeroVariacaoCarteira = "477";
                 parametrosRequisicao.codigoModalidadeTitulo = "1";
                 parametrosRequisicao.dataEmissaoTitulo = "23.06.2023";
-                parametrosRequisicao.dataVencimentoTitulo = "09.09.2023";
+                parametrosRequisicao.dataVencimentoTitulo = ConverteDataFormatoTitulo(CalculaDataVencimentoTitulo());
                 parametrosRequisicao.valorOriginalTitulo = valorMulta;
                 parametrosRequisicao.codigoTipoDesconto = "1";
                 parametrosRequisicao.codigoTipoJuroMora = "0";
@@ -122,7 +131,8 @@ namespace CodivaServiceWS.Service.Implementation
                 parametrosRequisicao.codigoTipoTitulo = "4";
                 parametrosRequisicao.codigoTipoContaCaucao = "0";
                 parametrosRequisicao.textoNumeroTituloBeneficiario = "0";
-                parametrosRequisicao.textoNumeroTituloCliente = "39809104038287511";
+                parametrosRequisicao.textoNumeroTituloCliente = nossoNumero;
+                parametrosRequisicao.textoMensagemBloquetoOcorrencia = instrucoes;
                 parametrosRequisicao.codigoTipoInscricaoPagador = "2";
                 parametrosRequisicao.numeroInscricaoPagador = "11111111000191";
                 parametrosRequisicao.nomePagador = "clinkids servicos medicos ltda";
@@ -134,10 +144,10 @@ namespace CodivaServiceWS.Service.Implementation
                 parametrosRequisicao.codigoChaveUsuario = "1";
                 parametrosRequisicao.codigoTipoCanalSolicitacao = "5";
                 parametrosRequisicao.valorDescontoTitulo = valorDesconto.ToString();
-                parametrosRequisicao.dataDescontoTitulo = "06.09.2023";
+                parametrosRequisicao.dataDescontoTitulo = ConverteDataFormatoTitulo(CalculaDataLimitePagamentoDesconto());
 
                 var retorno = guiaWS.boletoAvulsoRegistradoBB(parametrosRequisicao);
-
+                
                 if (retorno != null && retorno.guiaArrecad != null)
                 {
                     string convenio = "2677473";
@@ -177,7 +187,7 @@ namespace CodivaServiceWS.Service.Implementation
                     var boleto = new Boleto()
                     {
                         ContaBancaria = contaBancaria,
-                        DataVencimento = Convert.ToDateTime("09/09/2023"),
+                        DataVencimento = CalculaDataVencimentoTitulo(), //Convert.ToDateTime("09/09/2023"),
                         ValorBoleto = Convert.ToDecimal(valorMulta),
                         NossoNumero = "26774730000000085",
                         NumeroDocumento = "0000000085",
@@ -188,6 +198,9 @@ namespace CodivaServiceWS.Service.Implementation
                         LocalPagamento = "PAGÁVEL EM QUALQUER BANCO ATÉ O VENCIMENTO",
                         Instrucoes = new List<IInstrucao>() { new Instrucao_BancoBrasil() { Descricao = "Desconto de 20% se pago até 20 dias a contar da data de recebimento desta notificação, nos termos do art. 21 da Lei n. 6.437/77" } },
                         DataDesconto = CalculaDataLimitePagamentoDesconto(),
+                        NumeroProcesso = dadosDebito.NumProcesso,
+                        NumeroDebito = codigoDebito.ToString(),
+                        NumeroDecisao = dadosDebito.NumDocumento,
                         ValorDesconto = Convert.ToDecimal(valorDesconto)
                     };
 
@@ -212,7 +225,7 @@ namespace CodivaServiceWS.Service.Implementation
                     if (!Directory.Exists(diretorioBoleto))
                         Directory.CreateDirectory(diretorioBoleto);
 
-                    string pathBoleto = Path.Combine(diretorioBoleto, "Boleto.pdf");
+                    string pathBoleto = Path.Combine(diretorioBoleto, codigoDebito.ToString()+"_Boleto.pdf");
 
                     using (var fs = new FileStream(pathBoleto, FileMode.Create, FileAccess.Write))
                     {
@@ -244,6 +257,7 @@ namespace CodivaServiceWS.Service.Implementation
             }
             catch (Exception ex)
             {
+                GravarMensagem("GerarNotificacaoDebito - " + ex.Message);
                 return "";
             }
         }
@@ -323,6 +337,60 @@ namespace CodivaServiceWS.Service.Implementation
                 //}
                 else return dt;
             }
+        }
+
+        private DateTime CalculaDataVencimentoTitulo()
+        {
+            DateTime ultimoDiaDoMes = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month));
+
+            var ultimoDiaUtilDoMes = ultimoDiaDoMes;
+
+            for (DateTime data = ultimoDiaDoMes; data.Day > 0; data = data.AddDays(-1))
+            {
+                if (IsDiaUtil(data))
+                {
+                    ultimoDiaUtilDoMes = data;
+                    break;
+                }
+            }
+
+            return ultimoDiaUtilDoMes;
+        }
+
+        private Boolean IsDiaUtil(DateTime dt)
+        {
+            return !dt.IsHoliday() && dt.DayOfWeek != DayOfWeek.Saturday && dt.DayOfWeek != DayOfWeek.Sunday;
+        }
+
+        private String ConverteDataFormatoTitulo(DateTime dt)
+        {
+            return dt.Day.ToString() + "." + dt.Month.ToString() + "." + dt.Year.ToString();
+        }
+
+        public bool IncluirParcelaDebito(int codigoDebito, string nossoNumero, string dataVencimento, string valorMulta)
+        {
+            return _debitoDapper.IncluirParcelaDebito(codigoDebito, nossoNumero, dataVencimento, valorMulta);
+        }
+
+        public bool AtualizarSituacaoDebito(int codigoDebito, int codigoSituacao)
+        {
+            return _debitoDapper.AtualizarSituacaoDebito(codigoDebito, codigoSituacao);
+        }
+
+        public void GravarMensagem(string mensagem)
+        {
+            var path = HttpContext.Current.Server.MapPath("/log/");
+
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+
+            path = path + DateTime.Now.Year.ToString() + DateTime.Now.Month.ToString().PadLeft(2, '0') + DateTime.Now.Day.ToString() + ".txt";
+
+            StreamWriter sw = new StreamWriter(path);
+
+            sw.WriteLine(DateTime.Now.ToString() + " " + mensagem);
+
+            sw.Close();
         }
     }
 }

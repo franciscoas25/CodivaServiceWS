@@ -75,6 +75,10 @@ namespace BoletoNet
         private string _tipoImpressao = "A";
 		private Remessa _remessa;
 
+        private string _numeroProcesso = string.Empty;
+        private string _numeroDebito = string.Empty;
+        private string _numeroDecisao = string.Empty;
+
         private ObservableCollection<GrupoDemonstrativo> _demonstrativos;
 
 		#endregion
@@ -632,6 +636,24 @@ namespace BoletoNet
         {
             get { return _numeroControle; }
             set { _numeroControle = value; }
+        }
+
+        public string NumeroProcesso
+        {
+            get { return this._numeroProcesso; }
+            set { this._numeroProcesso = value; }
+        }
+
+        public string NumeroDebito
+        {
+            get { return this._numeroDebito; }
+            set { this._numeroDebito = value; }
+        }
+
+        public string NumeroDecisao
+        {
+            get { return this._numeroDecisao; }
+            set { this._numeroDecisao = value; }
         }
 
         public IBancoCarteira BancoCarteira { get; set; }

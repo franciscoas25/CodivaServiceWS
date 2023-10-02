@@ -16,5 +16,7 @@ namespace CodivaServiceWS.Service.Interface
         string GerarNotificacaoDebito(int codigoDebito, string nossoNumero, string valorMulta, string dataVencimento, string percentualSelic, string percentualMulta, string valorSelic, string valorMultaSelic);
         int ObterCodigoDebito(string tipoDebito, string numDocumento, string anoDocumento, int unidadeArrecadadora);
         bool AlterarDebito(int codigoDebito, string anoDocumento, string numDocumento, string numProcesso, string valorMulta, string dataVencimento);
+        bool IncluirParcelaDebito(int codigoDebito, string nossoNumero, string dataVencimento, string valorMulta);
+        bool AtualizarSituacaoDebito(int codigoDebito, int codigoSituacao);
     }
 }

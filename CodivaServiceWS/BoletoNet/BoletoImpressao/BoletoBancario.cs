@@ -55,6 +55,9 @@ namespace BoletoNet
 
         private string _nomeAutuado = string.Empty;
         private string _cpfCnpjAutuado = string.Empty;
+        private string _numeroProcesso = string.Empty;
+        private string _numeroDebito = string.Empty;
+        private string _numeroDecisao = string.Empty;
 
         #endregion Variaveis
 
@@ -384,9 +387,9 @@ namespace BoletoNet
             try
             {
                 var html = new StringBuilder();
-                string numeroDebito = "123456";
+                string numeroDebito = $"{_numeroDebito}";
 
-                string instrucoes = $"Processo Administrativo Sanitário nº:<br/>Autuado: {_nomeAutuado} - CNPJ: {_cpfCnpjAutuado}<br/><br/> Prezado (a) Senhor (a),<br/><br/>Informamos que foi proferido julgamento pela Coordenação de Atuação Administrativa e Julgamento das Infrações Sanitárias no processo administrativo sancionador em referência, conforme decisão disponível no Sistema Eletrônico de Informações (SEI), n. XXXXX. Para maiores informações acesse o Manual do Usuário Externo Sei-Anvisa, que está disponível em https://www.gov.br/anvisa/pt-br/sistemas/sei.<br/>O valor da multa poderá ser pago com 20% de desconto caso seja efetuado em até 20 dias contados de seu recebimento. <br/>Havendo interesse na interposição de recurso administrativo, este poderá ser interposto, exclusivamente pelo Sistema Eletrônico de Informações (SEI), no prazo de 20 dias contados do recebimento desta notificação, conforme disposto no art. 9º da RDC nº 266/2019. O pagamento da multa com desconto implica em desistência tácita do recurso, conforme art. 21 da Lei nº 6.437/1977.<br/>Esclarecemos ainda que o recurso, procurações e substabelecimentos apresentados deverão ser assinados eletronicamente com certificação digital no padrão da Infraestrutura de Chaves Públicas Brasileira (ICP-Brasil) ou pelo assinador Gov.Br.<br/>Informações e pedidos de cópias devem ser solicitados exclusivamente pelos Canais de Atendimento da Anvisa (https://www.gov.br/anvisa/pt-br/canais_atendimento) ou pelo Serviço de Atendimento ao Cidadão (https://www.gov.br/anvisa/pt-br/acessoainformacao/sic) ou telefone: 0800-642-9782.<br/>A segunda via de boleto, ou boleto atualizado, pode ser obtida ao acessar o link http://www.anvisa.gov.br/sispar/Index.asp, informar o n. CNPJ e o n. débito, “cota única”.<br/>Por fim, esclarecemos que o valor da multa foi atualizado pela taxa selic acumulada nos termos do art. 37-A da Lei n° 10.522/2002 e no art. 5° do Decreto-lei n° 1.736/79.";
+                string instrucoes = $"Processo Administrativo Sancionador (PAS) nº: {_numeroProcesso}<br/>Autuado: {_nomeAutuado} - CNPJ: {_cpfCnpjAutuado}<br/><br/>Prezado (a) Senhor (a),<br/><br/>Informamos que o processo em referência foi julgado pela Coordenação de Atuação Administrativa e Julgamento das Infrações Sanitárias (CAJIS) conforme decisão n. {_numeroDecisao} disponível no Sistema Eletrônico de Informações (SEI). Para maiores informações acesse o Manual do Usuário Externo Sei-Anvisa, que está disponível em https://www.gov.br/anvisa/pt-br/sistemas/sei.<br/>Havendo interesse no pedido de cópia ou na interposição de recurso administrativo, estes deverão ser protocolados exclusivamente pelo Sistema Eletrônico de Informações (SEI).<br/>O prazo para interposição de recurso é de 20 dias contados do recebimento desta notificação, conforme disposto no art. 9º da RDC nº 266/2019. Alertamos que o recurso, procurações e substabelecimentos apresentados deverão ser assinados eletronicamente com certificação digital no padrão da Infraestrutura de Chaves Públicas Brasileira (ICP-Brasil) ou pelo assinador Gov.Br.<br/>O valor da multa poderá ser pago com 20% de desconto caso seja efetuado em até 20 dias contados de seu recebimento. Contudo, o seu pagamento com desconto implica em desistência tácita do recurso, conforme art. 21 da Lei nº 6.437/1977.<br/>A segunda via de boleto, ou boleto atualizado, pode ser obtida ao acessar o link http://www.anvisa.gov.br/sispar/Index.asp, informando o n. CNPJ, o n. débito e marcando \"cota única\".<br/>Esclarecemos que o valor da multa foi atualizado pela taxa selic acumulada nos termos do art. 37-A da Lei nº 10.522/2002 e no art. 5º do Decreto-Lei nº 1.736/79.<br/>Por fim, demais informações devem ser solicitados exclusivamente pelos Canais de Atendimento da Anvisa (https://www.gov.br/anvisa/pt-br/canais_atendimento) ou pelo Serviço de Atendimento ao Cidadão (https://www.gov.br/anvisa/pt-br/acessoainformacao/sic).";
 
                 var bytesLogoAnvisa = File.ReadAllBytes(System.Web.HttpContext.Current.Server.MapPath("./BoletoNet/Imagens/logo_anvisa.jpg"));
 
@@ -926,9 +929,11 @@ namespace BoletoNet
                 .Replace("@OUTROSACRESCIMOS",
                     (Boleto.OutrosAcrescimos == 0 ? "" : Boleto.OutrosAcrescimos.ToString("C", CultureInfo.GetCultureInfo("PT-BR"))))
                 .Replace("@OUTRASDEDUCOES", "")
-                .Replace(
+                /* -- Utilizando o replace abaixo para não exibir o valor do desconto no boleto
+                  .Replace(
                     "@DESCONTOS",
-                    (Boleto.ValorDesconto == 0 ? "" : Boleto.ValorDesconto.ToString("C", CultureInfo.GetCultureInfo("PT-BR"))))
+                    (Boleto.ValorDesconto == 0 ? "" : Boleto.ValorDesconto.ToString("C", CultureInfo.GetCultureInfo("PT-BR"))))*/
+                .Replace("@DESCONTOS", "")
                 .Replace("@AGENCIACONTA", agenciaCodigoCedente)
                 .Replace("@SACADO", sacado)
                 .Replace("@INFOSACADO", infoSacado)
@@ -1494,7 +1499,10 @@ namespace BoletoNet
             {
                 _nomeAutuado = boleto.Sacado.Nome;
                 _cpfCnpjAutuado = boleto.Sacado.CPFCNPJ;
-                
+                _numeroProcesso = boleto.Boleto.NumeroProcesso;
+                _numeroDebito = boleto.Boleto.NumeroDebito;
+                _numeroDecisao = boleto.Boleto.NumeroDecisao;
+
                 qtdeBoletosPagina++;
 
                 if (qtdeBoletosPagina % BoletosPorPagina == 0)

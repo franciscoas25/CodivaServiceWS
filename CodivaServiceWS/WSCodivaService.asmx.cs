@@ -77,10 +77,15 @@ namespace CodivaServiceWS
                 if (!_debitoService.IncluirHistoricoSituacaoDebito(codigoDebito, tipoDebito, numDocumento, anoDocumento, unidadeArrecadadora))
                     return incluirDebitoResponseDto;
 
-                //var nossoNumero = _debitoService.CalculaNossoNumero("11", receita, "0");
+                var nossoNumero = _debitoService.CalculaNossoNumero("11", receita, "0");
+
+                if (!_debitoService.IncluirParcelaDebito(codigoDebito, nossoNumero.ToString(), "01/01/2099", valorMulta))
+                {
+                    return incluirDebitoResponseDto;
+                }
 
                 //Notificação Administrativa
-                _debitoService.GerarNotificacaoDebito(codigoDebito, "11012323000001820", valorMulta, "01/01/2099", "0", "0", "0", "0");
+                _debitoService.GerarNotificacaoDebito(codigoDebito, nossoNumero.ToString(), valorMulta, "01/01/2099", "0", "0", "0", "0");
 
                 incluirDebitoResponseDto.CodigoReceita = 10;
                 incluirDebitoResponseDto.IdContrato = 100;
