@@ -17,13 +17,20 @@ namespace PagamentoDebitoService.Dapper.Implementation
         {
             using (IDbConnection connection = PagamentoServiceConnection.GetConnection(connectionString))
             {
-                var dadosGuiasPagas = connection.Query<DadosGuiaDto>(@"SELECT NU_PROCESSO            AS NUMEROPROCESSO,
-                                                                        CO_BOLETOBB_REGISTRADO AS NUMEROREFERENCIA,
-                                                                        DT_PAGAMENTO           AS DATAPAGAMENTO,
-                                                                        VL_TOTAL_GUIA          AS VALORPAGO
-                                                                 FROM   DBARRECAD.TB_GUIA
-                                                                 WHERE  ST_GUIA IN ('P', 'O', 'A', 'S', 'N', 'I')
-                                                                 AND    to_date(DT_PAGAMENTO, 'dd/mm/yyyy') = to_date(sysdate - 4, 'dd/mm/yyyy')");
+                var dadosGuiasPagas = connection.Query<DadosGuiaDto>(@"SELECT G.NU_PROCESSO AS NUMEROPROCESSO, 
+                                                                              G.CO_BOLETOBB_REGISTRADO AS NUMEROREFERENCIA,
+                                                                              PAG.DT_PAGAMENTO AS DATAPAGAMENTO,
+                                                                              PAG.VL_PAGAMENTO AS VALORPAGO
+                                                                       FROM   DBARRECAD.TB_GUIA G,
+                                                                              DBARRECAD.TB_BOLETOBB_REGISTRADO REG,
+                                                                              DBCODIVA.TB_PARCELA PARC,
+                                                                              DBCODIVA.TB_PAGAMENTO PAG
+                                                                       WHERE  G.CO_BOLETOBB_REGISTRADO = REG.CO_SEQ_BOLETOBB_REGISTRADO
+                                                                       AND    REG.ID_SOLICITACAO = PARC.NU_NOSSO_NUMERO
+                                                                       AND    PARC.CO_PAGAMENTO = PAG.NU_SEQ_PAGAMENTO
+                                                                       AND    PARC.CO_PAGAMENTO IS NOT NULL
+                                                                       --AND  to_date(G.DT_PAGAMENTO, 'dd/mm/yyyy') = to_date(sysdate - 1, 'dd/mm/yyyy')
+                                                                       AND    PARC.CO_DEBITO IN (33284, 32780)");
 
                 return dadosGuiasPagas;
             }
@@ -38,7 +45,7 @@ namespace PagamentoDebitoService.Dapper.Implementation
                                                                                  DT_VENCIMENTO           AS DATAVENCIMENTO
                                                                           FROM   DBARRECAD.TB_GUIA
                                                                           WHERE  ST_GUIA NOT IN ('P', 'O', 'A', 'S', 'N', 'I')
-                                                                          AND    to_date(DT_VENCIMENTO, 'dd/mm/yyyy') = to_date(sysdate - 4, 'dd/mm/yyyy')");
+                                                                          AND    to_date(DT_VENCIMENTO, 'dd/mm/yyyy') = to_date(sysdate - 1, 'dd/mm/yyyy')");
 
                 return dadosGuiasVencidas;
             }

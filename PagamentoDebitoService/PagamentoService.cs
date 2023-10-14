@@ -1,10 +1,7 @@
 using PagamentoDebitoService.DTO;
+using PagamentoDebitoService.Email;
 using PagamentoDebitoService.Service.Interface;
 using SelectPdf;
-using System.Net.Security;
-using System.Security.Policy;
-using System.Text;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace PagamentoDebitoService
 {
@@ -16,6 +13,13 @@ namespace PagamentoDebitoService
 
         public IPagamentoGuiaService _pagamentoGuiaService { get; set; }
 
+        private string _lstDestinatarios = string.Empty;
+        private string _remetente = string.Empty;
+        private string _assunto = string.Empty;
+        private string _nomeEmail = string.Empty;
+        private string _host = string.Empty;
+        private int _port = 0;
+
         private readonly IHostEnvironment _hostEnvironment;
 
         public PagamentoService(ILogger<PagamentoService> logger, IPagamentoGuiaService pagamentoGuiaService, IConfiguration config, IHostEnvironment hostEnvironment)
@@ -23,9 +27,15 @@ namespace PagamentoDebitoService
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _pagamentoGuiaService = pagamentoGuiaService ?? throw new ArgumentNullException(nameof(pagamentoGuiaService));
             _config = config;
-
             _connectionString = _config.GetValue<string>("PagamentoServiceConnectioString")!;
             _hostEnvironment = hostEnvironment;
+
+            _lstDestinatarios = _config.GetValue<string>("Email:DestinatariosEmail")!;
+            _remetente = _config.GetValue<string>("Email:Remetente")!;
+            _assunto = _config.GetValue<string>("Email:Assunto")!;
+            _nomeEmail = _config.GetValue<string>("Email:NomeEmail")!;
+            _host = _config.GetValue<string>("SmtpClient:Host")!;
+            _port = _config.GetValue<int>("SmtpClient:Port")!;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -37,26 +47,30 @@ namespace PagamentoDebitoService
                 var lstGuiasPagas = ObterGuiasPagas(_connectionString);
 
                 if (lstGuiasPagas.Any())
-                {
                     GerarComprovantesPagamento(lstGuiasPagas);
 
-                    //EnviarEmail();
-                }
-                else
-                {
-                    //EnviarEmail();
-                }
+                EnviarEmail(_lstDestinatarios, lstGuiasPagas, _assunto, _remetente, _nomeEmail, _host, _port);
 
                 var lstGuiasVencidas = ObterGuiasVencidas(_connectionString);
 
                 if (lstGuiasVencidas.Any())
-                {
                     GerarComprovantesNaoQuitacao(lstGuiasVencidas);
 
-                    //EnviarEmail();
-                }
+                EnviarEmail(_lstDestinatarios, lstGuiasVencidas, _assunto, _remetente, _nomeEmail, _host, _port);
 
                 await Task.Delay(10000, stoppingToken);
+            }
+        }
+
+        private void EnviarEmail(string lstDestinatarios, IEnumerable<DadosGuiaDto> lstGuias, string assunto, string remetente, string nomeEmail, string host, int port)
+        {
+            try
+            {
+                EnvioEmail.Send(lstDestinatarios, lstGuias, assunto, remetente, nomeEmail, _host, _port);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
             }
         }
 
@@ -132,7 +146,7 @@ namespace PagamentoDebitoService
                               </table>
                           </div>";
 
-                
+
                 htmlToPdf.Options.PdfPageOrientation = PdfPageOrientation.Portrait;
                 htmlToPdf.Options.MarginLeft = 15;
                 htmlToPdf.Options.MarginRight = 15;

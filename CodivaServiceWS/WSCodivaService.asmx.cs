@@ -8,10 +8,14 @@ using System.ComponentModel;
 using System.Data.Entity.Core.Mapping;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.PeerToPeer;
 using System.Reflection;
+using System.Security.Policy;
 using System.Web;
 using System.Web.Services;
 using System.Web.Services.Protocols;
+using System.Xml;
 using static CodivaServiceWS.Enum.Enum;
 
 namespace CodivaServiceWS
@@ -19,7 +23,7 @@ namespace CodivaServiceWS
     [WebService(Namespace = "http://tempuri.org/")]
     [WebServiceBinding(ConformsTo = WsiProfiles.BasicProfile1_1)]
     [System.ComponentModel.ToolboxItem(false)]
-    public class WSCodivaService : WebServiceBase    
+    public class WSCodivaService : WebServiceBase
     {
         [Inject]
         public IPessoaAutuadaService _pessoaAutuadaService { get; set; }
@@ -34,7 +38,7 @@ namespace CodivaServiceWS
             try
             {
                 GravarMensagem("Inserindo um novo débito...");
-                
+
                 PessoaAutuadaDto pessoaAutuadaDto = new PessoaAutuadaDto();
 
                 if (sistemaOrigem == SistemaOrigem.SEI.GetType().GetMember(SistemaOrigem.SEI.ToString()).First().GetCustomAttribute<DescriptionAttribute>().Description)
@@ -77,15 +81,25 @@ namespace CodivaServiceWS
                 if (!_debitoService.IncluirHistoricoSituacaoDebito(codigoDebito, tipoDebito, numDocumento, anoDocumento, unidadeArrecadadora))
                     return incluirDebitoResponseDto;
 
-                var nossoNumero = _debitoService.CalculaNossoNumero("11", receita, "0");
+                //var nossoNumero = _debitoService.CalculaNossoNumero("11", receita, "0");
 
-                if (!_debitoService.IncluirParcelaDebito(codigoDebito, nossoNumero.ToString(), "01/01/2099", valorMulta))
+                //if (!_debitoService.IncluirParcelaDebito(codigoDebito, nossoNumero.ToString(), "01/01/2099", valorMulta))
+                //{
+                //    return incluirDebitoResponseDto;
+                //}
+
+                var retorno = _debitoService.GerarNotificacaoDebito(codigoDebito, valorMulta, "01/01/2099", "0", "0", "0", "0");
+
+                if (retorno.sucesso)
+                {
+                    if (_debitoService.AtualizarSituacaoDebito(codigoDebito, 3))
+                        _debitoService.IncluirHistoricoSituacaoDebito(codigoDebito, 3, "PAULO.ALBUQUERQUE");
+                }
+
+                if (!_debitoService.IncluirParcelaDebito(codigoDebito, retorno.nossoNumero, "01/01/2099", valorMulta))
                 {
                     return incluirDebitoResponseDto;
                 }
-
-                //Notificação Administrativa
-                _debitoService.GerarNotificacaoDebito(codigoDebito, nossoNumero.ToString(), valorMulta, "01/01/2099", "0", "0", "0", "0");
 
                 incluirDebitoResponseDto.CodigoReceita = 10;
                 incluirDebitoResponseDto.IdContrato = 100;

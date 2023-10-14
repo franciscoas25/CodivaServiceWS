@@ -20,7 +20,7 @@ namespace CodivaServiceWS.Dapper.Implementation
 {
     public class DebitoDapper : IDebitoDapper
     {
-        public bool IncluirDebito(int codPessoaDevedora, string receita, int codStatusDebito, int unidadeArrecadadora, string anoDocumento, string numDocumento, string numProcesso, int tipoDebito, string dataMulta, string valorMulta)
+        public bool IncluirDebito(int codPessoaDevedora, string receita, int codStatusDebito, int unidadeArrecadadora, string anoDocumento, string numDocumento, string numProcesso, int tipoDebito, string dataMulta, string valorMulta, string dataVencimento)
         {
             using (IDbConnection connection = CodivaServiceConnection.GetConnection())
             {
@@ -40,7 +40,8 @@ namespace CodivaServiceWS.Dapper.Implementation
                                     VL_DESCONTO,
                                     DT_ALTERACAO,
                                     DT_VENCIMENTO, 
-                                    DT_INICIAL
+                                    DT_INICIAL,
+                                    ST_DEBITO_EXIGIVEL
                                 )
                                 VALUES
                                 (
@@ -57,8 +58,9 @@ namespace CodivaServiceWS.Dapper.Implementation
                                     500,
                                     0,
                                     to_date('{DateTime.Now}', 'dd/mm/yyyy HH24:mi:ss'),
-                                    to_date('01/01/2999', 'dd/mm/yyyy HH24:mi:ss'),
-                                    to_date('{dataMulta}', 'dd/mm/yyyy HH24:mi:ss')
+                                    to_date('{dataVencimento}', 'dd/mm/yyyy HH24:mi:ss'),
+                                    to_date('{dataMulta}', 'dd/mm/yyyy HH24:mi:ss'),
+                                    'N'
                                 )";
 
                 var result = connection.Execute(sql);
@@ -134,7 +136,7 @@ namespace CodivaServiceWS.Dapper.Implementation
                                     '{coUsuario}',
                                     to_date('{DateTime.Now}', 'dd/mm/yyyy HH24:mi:ss'),
                                     to_date('{DateTime.Now}', 'dd/mm/yyyy HH24:mi:ss')
-                                )";
+                                )" ;
 
                 var result = connection.Execute(sql);
 

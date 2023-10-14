@@ -3,7 +3,11 @@ using PagamentoDebitoService.Dapper.Implementation;
 using PagamentoDebitoService.Dapper.Interface;
 using PagamentoDebitoService.Service.Implementation;
 using PagamentoDebitoService.Service.Interface;
-using System.Configuration;
+
+
+IConfiguration configuration = new ConfigurationBuilder()
+    .AddJsonFile("appsettings.json", false, true)
+    .Build();
 
 IHost host = Host.CreateDefaultBuilder(args)
     .ConfigureServices(services =>
@@ -16,3 +20,4 @@ IHost host = Host.CreateDefaultBuilder(args)
     .Build();
 
 host.Run();
+

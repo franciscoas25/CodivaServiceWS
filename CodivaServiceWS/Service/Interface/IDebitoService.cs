@@ -13,10 +13,11 @@ namespace CodivaServiceWS.Service.Interface
         bool VerificaSeDebitoEstaCadastrado(string tipoDebito, string numDocumento, string anoDocumento, int unidadeArrecadadora);
         bool IncluirHistoricoSituacaoDebito(int codigoDebito, string tipoDebito, string numDocumento, string anoDocumento, int unidadeArrecadadora);
         decimal CalculaNossoNumero(string uf, string receita, string tipoNossoNumero);
-        string GerarNotificacaoDebito(int codigoDebito, string nossoNumero, string valorMulta, string dataVencimento, string percentualSelic, string percentualMulta, string valorSelic, string valorMultaSelic);
+        (bool sucesso, string urlBoleto, string nossoNumero) GerarNotificacaoDebito(int codigoDebito, string valorMulta, string dataVencimento, string percentualSelic, string percentualMulta, string valorSelic, string valorMultaSelic);
         int ObterCodigoDebito(string tipoDebito, string numDocumento, string anoDocumento, int unidadeArrecadadora);
         bool AlterarDebito(int codigoDebito, string anoDocumento, string numDocumento, string numProcesso, string valorMulta, string dataVencimento);
         bool IncluirParcelaDebito(int codigoDebito, string nossoNumero, string dataVencimento, string valorMulta);
         bool AtualizarSituacaoDebito(int codigoDebito, int codigoSituacao);
+        bool IncluirHistoricoSituacaoDebito(int codDebito, int coStatusDebito, string coUsuario);
     }
 }
