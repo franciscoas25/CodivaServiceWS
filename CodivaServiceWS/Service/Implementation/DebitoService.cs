@@ -1,5 +1,4 @@
-﻿using BoletoNet;
-using CodivaServiceWS.Dapper.Interface;
+﻿using CodivaServiceWS.Dapper.Interface;
 using CodivaServiceWS.Service.Interface;
 using IronPdf;
 using Ninject;
@@ -18,11 +17,16 @@ using static CodivaServiceWS.Enum.Enum;
 using BrazilHolidays;
 using BrazilHolidays.Net;
 using System.Web;
+using BoletoNetCore;
+using Grpc.Core.Utils;
 
 namespace CodivaServiceWS.Service.Implementation
 {
     public class DebitoService : IDebitoService
     {
+        [Inject]
+        public IBanco _banco; 
+        
         [Inject]
         public IDebitoDapper _debitoDapper { get; set; }
 
@@ -152,28 +156,19 @@ namespace CodivaServiceWS.Service.Implementation
                 var retorno = guiaWS.boletoAvulsoRegistradoBB(parametrosRequisicao);
 
                 if (retorno != null && retorno.guiaArrecad != null)
-                {
-                    //string convenio = "3547147";
-
-                    //var contaBancaria = new ContaBancaria()
-                    //{
-                    //    Agencia = "4175",
-                    //    DigitoAgencia = "2",
-                    //    Conta = "6141",
-                    //    DigitoConta = "5",
-                    //    OperacaConta = "019"
-                    //};
-
+                {               
                     var contaBancaria = new ContaBancaria()
                     {
                         Agencia = "3477",
                         DigitoAgencia = "0",
                         Conta = "00333001",
                         DigitoConta = "X",
-                        OperacaConta = "019"
+                        OperacaoConta = "019",
+                        CarteiraPadrao = "17",
+                        VariacaoCarteiraPadrao = "019"
                     };
 
-                    var cedente = new Cedente()
+                    var cedente = new Beneficiario()
                     {
                         Codigo = parametrosRequisicao.numeroConvenio, //ced.ID.ToString().PadLeft(7, '0'),
                         //Convenio = Convert.ToInt64(parametrosRequisicao.numeroConvenio),
@@ -182,13 +177,13 @@ namespace CodivaServiceWS.Service.Implementation
                         ContaBancaria = contaBancaria
                     };
 
-                    var sacado = new Sacado()
+                    var sacado = new Pagador()
                     {
                         CPFCNPJ = parametrosRequisicao.numeroInscricaoPagador,
                         Nome = parametrosRequisicao.nomePagador,
                         Endereco = new Endereco()
                         {
-                            End = dadosDebito.Endereco,
+                            LogradouroEndereco = dadosDebito.Endereco,
                             Bairro = dadosDebito.Bairro,
                             Cidade = dadosDebito.Cidade,
                             UF = dadosDebito.UF,
@@ -196,41 +191,59 @@ namespace CodivaServiceWS.Service.Implementation
                         }
                     };
 
-                    var boleto = new Boleto()
+                    _banco = Banco.Instancia(Bancos.BancoDoBrasil);
+                    _banco.Beneficiario = cedente;
+                    _banco.FormataBeneficiario();
+
+                    //var boleto = new Boleto(_banco)
+                    //{
+                    //    ContaBancaria = contaBancaria,
+                    //    DataVencimento = CalculaDataVencimentoTitulo(), //Convert.ToDateTime("09/09/2023"),
+                    //    ValorBoleto = Convert.ToDecimal(valorMulta),
+                    //    NossoNumero = nossoNumero,
+                    //    NumeroDocumento = "0000000085",
+                    //    Carteira = "18",
+                    //    Cedente = cedente,
+                    //    Sacado = sacado,
+                    //    EspecieDocumento = new EspecieDocumento_BancoBrasil("4"),
+                    //    LocalPagamento = "PAGÁVEL EM QUALQUER BANCO ATÉ O VENCIMENTO",
+                    //    Instrucoes = new List<IInstrucao>() { new Instrucao_BancoBrasil() { Descricao = "Desconto de 20% se pago até 20 dias a contar da data de recebimento desta notificação, nos termos do art. 21 da Lei n. 6.437/77" } },
+                    //    DataDesconto = CalculaDataLimitePagamentoDesconto(),
+                    //    NumeroProcesso = dadosDebito.NumProcesso,
+                    //    NumeroDebito = codigoDebito.ToString(),
+                    //    NumeroDecisao = dadosDebito.NumDocumento,
+                    //    ValorDesconto = Convert.ToDecimal(valorDesconto)
+                    //};
+
+                    var boleto = new Boleto(_banco)
                     {
-                        ContaBancaria = contaBancaria,
-                        DataVencimento = CalculaDataVencimentoTitulo(), //Convert.ToDateTime("09/09/2023"),
-                        ValorBoleto = Convert.ToDecimal(valorMulta),
+                        DataVencimento = CalculaDataVencimentoTitulo(),
+                        ValorTitulo = Convert.ToDecimal(valorMulta),
                         NossoNumero = nossoNumero,
                         NumeroDocumento = "0000000085",
-                        Carteira = "18",
-                        Cedente = cedente,
-                        Sacado = sacado,
-                        EspecieDocumento = new EspecieDocumento_BancoBrasil("4"),
-                        LocalPagamento = "PAGÁVEL EM QUALQUER BANCO ATÉ O VENCIMENTO",
-                        Instrucoes = new List<IInstrucao>() { new Instrucao_BancoBrasil() { Descricao = "Desconto de 20% se pago até 20 dias a contar da data de recebimento desta notificação, nos termos do art. 21 da Lei n. 6.437/77" } },
+                        EspecieDocumento = TipoEspecieDocumento.DS,
+                        Pagador = sacado,
+                        Carteira = "17",
+                        CodigoInstrucao1 = "Desconto de 20% se pago até 20 dias a contar da data de recebimento desta notificação, nos termos do art. 21 da Lei n. 6.437/77",
                         DataDesconto = CalculaDataLimitePagamentoDesconto(),
-                        NumeroProcesso = dadosDebito.NumProcesso,
-                        NumeroDebito = codigoDebito.ToString(),
-                        NumeroDecisao = dadosDebito.NumDocumento,
                         ValorDesconto = Convert.ToDecimal(valorDesconto)
                     };
 
                     var boleto_bancario = new BoletoBancario()
                     {
-                        CodigoBanco = 001,
                         Boleto = boleto,
                         MostrarCodigoCarteira = false,
                         MostrarComprovanteEntrega = false
                     };
 
-                    boleto_bancario.Boleto.Valida();
+                    boleto_bancario.Boleto.ValidarDados();
 
                     //string htmlBoleto = boleto_bancario.MontaHtmlEmbedded();
 
                     lstBoletos.Add(boleto_bancario);
 
-                    var bytes = boleto_bancario.MontaBytesListaBoletosPDF(lstBoletos);
+                    //var bytes = boleto_bancario.MontaBytesListaBoletosPDF(lstBoletos);
+                    var bytes = boleto_bancario.MontaHtmlEmbedded();
 
                     string diretorioBoleto = System.Web.HttpContext.Current.Server.MapPath("./Boleto");
 
@@ -239,10 +252,10 @@ namespace CodivaServiceWS.Service.Implementation
 
                     string pathBoleto = Path.Combine(diretorioBoleto, codigoDebito.ToString() + "_Boleto.pdf");
 
-                    using (var fs = new FileStream(pathBoleto, FileMode.Create, FileAccess.Write))
-                    {
-                        fs.Write(bytes, 0, bytes.Length);
-                    }
+                    //using (var fs = new FileStream(pathBoleto, FileMode.Create, FileAccess.Write))
+                    //{
+                    //    fs.Write(bytes, 0, bytes.Length);
+                    //}
 
                     //HttpClient client = new HttpClient();
                     //client.BaseAddress = new Uri("https://unigru-pre.anvisa.gov.br");

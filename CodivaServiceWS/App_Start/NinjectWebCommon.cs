@@ -5,6 +5,7 @@ namespace CodivaServiceWS.App_Start
 {
     using System;
     using System.Web;
+    using BoletoNetCore;
     using CodivaServiceWS.Dapper.Implementation;
     using CodivaServiceWS.Dapper.Interface;
     using CodivaServiceWS.Service.Implementation;
@@ -68,6 +69,7 @@ namespace CodivaServiceWS.App_Start
 
             kernel.Bind<IPessoaAutuadaService>().To<PessoaAutuadaService>();
             kernel.Bind<IDebitoService>().To<DebitoService>();
+            kernel.Bind<IBanco>().To<BancoBrasil>();
 
             #endregion
 
