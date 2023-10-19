@@ -10,6 +10,7 @@ using SkiaSharp;
 
 namespace BoletoNetCore
 {
+    using System.ComponentModel;
     using System.Globalization;
     using System.Linq;
 
@@ -68,6 +69,12 @@ namespace BoletoNetCore
         /// </summary>
         public bool MostrarContraApresentacaoNaDataVencimento { get; set; }
 
+        [Browsable(true), Description("Caminho onde se encontra a ferramenta WkHtmlToPdf.")]
+        public string PdfToolPath { get; set; }
+
+        [Browsable(true), Description("Caminho onde a NReco gera os arquivos temporários necessários para a construção do PDF.")]
+        public string TempFilesPath { get; set; }
+
         public bool MostrarEnderecoBeneficiario { get; set; }
         #endregion Propriedades
 
@@ -112,22 +119,26 @@ namespace BoletoNetCore
         #endregion Override
 
         #region Html
-        public string GeraHtmlInstrucoes()
+        public string GeraHtmlInstrucoes(string codigoDebito)
         {
             try
             {
                 var html = new StringBuilder();
 
-                var titulo = "Instruções de Impressão";
-                var instrucoes = "Imprimir em impressora jato de tinta (ink jet) ou laser em qualidade normal. (Não use modo econômico).<br>Utilize folha A4 (210 x 297 mm) ou Carta (216 x 279 mm) - Corte na linha indicada<br>";
+                //var titulo = "Instruções de Impressão";
+                var instrucaoHeader = $"NOTIFICAÇÃO ADMINISTRATIVA&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspDébito nº {codigoDebito}&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspEm {DateTime.Now.ToShortDateString()}, Brasilia-DF<br/><br/>";
+                var instrucoes = "Processo Administrativo Sancionador (PAS) nº: 1250<br/>Autuado: clinkids servicos medicos ltda - CNPJ: 11111111000191<br/><br/>Prezado (a) Senhor (a),<br/><br/>Informamos que o processo em referência foi julgado pela Coordenação de Atuação Administrativa e Julgamento das Infrações Sanitárias (CAJIS)\r\nconforme decisão n. 28900 disponível no Sistema Eletrônico de Informações (SEI). Para maiores informações acesse o Manual do Usuário Externo\r\nSei-Anvisa, que está disponível em https://www.gov.br/anvisa/pt-br/sistemas/sei.<br/>Havendo interesse no pedido de cópia ou na interposição de recurso administrativo, estes deverão ser protocolados exclusivamente pelo Sistema\r\nEletrônico de Informações (SEI).<br/>O prazo para interposição de recurso é de 20 dias contados do recebimento desta notificação, conforme disposto no art. 9º da RDC nº 266/2019.\r\nAlertamos que o recurso, procurações e substabelecimentos apresentados deverão ser assinados eletronicamente com certificação digital no\r\npadrão da Infraestrutura de Chaves Públicas Brasileira (ICP-Brasil) ou pelo assinador Gov.Br.<br/>O valor da multa poderá ser pago com 20% de desconto caso seja efetuado em até 20 dias contados de seu recebimento. Contudo, o seu\r\npagamento com desconto implica em desistência tácita do recurso, conforme art. 21 da Lei nº 6.437/1977.<br/>A segunda via de boleto, ou boleto atualizado, pode ser obtida ao acessar o link http://www.anvisa.gov.br/sispar/Index.asp, informando o n. CNPJ,\r\no n. débito e marcando \"cota única\".<br/>Esclarecemos que o valor da multa foi atualizado pela taxa selic acumulada nos termos do art. 37-A da Lei nº 10.522/2002 e no art. 5º do Decreto\u0002Lei nº 1.736/79.<br/>Por fim, demais informações devem ser solicitados exclusivamente pelos Canais de Atendimento da Anvisa (https://www.gov.br/anvisa/pt\u0002br/canais_atendimento) ou pelo Serviço de Atendimento ao Cidadão (https://www.gov.br/anvisa/pt-br/acessoainformacao/sic).<br/><br/><br/><br/>";
+                var assinatura = "PATRICIA CRISTINA ANTUNES SEBASTIÃO<br/>Coordenação de Atuação Administrativa e Julgamento das Infrações Sanitárias";
 
-                var htmlInstrucao = GetResourceHypertext("BoletoNetCore.BoletoImpressao.Parts.Instrucoes.html");
+                var htmlInstrucao = GetResourceHypertext("CodivaServiceWS.BoletoNetCore.BoletoImpressao.Parts.Instrucoes.html");
                 html.Append(htmlInstrucao); //HTML.instrucoes
                 html.Append("<br />");
 
                 return html.ToString()
-                    .Replace("@TITULO", titulo)
-                    .Replace("@INSTRUCAO", instrucoes);
+                    //.Replace("@TITULO", titulo)
+                    .Replace("@INSTRUCAOHEADER", instrucaoHeader)
+                    .Replace("@INSTRUCAO", instrucoes)
+                    .Replace("@ASSINATURA", assinatura);
             }
             catch (Exception ex)
             {
@@ -161,19 +172,19 @@ namespace BoletoNetCore
             try
             {
                 var html = new StringBuilder();
-                html.Append(GetResourceHypertext("BoletoNetCore.BoletoImpressao.Parts.ReciboPagadorParte1.html"));
+                html.Append(GetResourceHypertext("CodivaServiceWS.BoletoNetCore.BoletoImpressao.Parts.ReciboPagadorParte1.html"));
                 html.Append("<br />");
-                html.Append(GetResourceHypertext("BoletoNetCore.BoletoImpressao.Parts.ReciboPagadorParte2.html"));
-                html.Append(GetResourceHypertext("BoletoNetCore.BoletoImpressao.Parts.ReciboPagadorParte3.html"));
+                html.Append(GetResourceHypertext("CodivaServiceWS.BoletoNetCore.BoletoImpressao.Parts.ReciboPagadorParte2.html"));
+                html.Append(GetResourceHypertext("CodivaServiceWS.BoletoNetCore.BoletoImpressao.Parts.ReciboPagadorParte3.html"));
                 if (MostrarEnderecoBeneficiario)
                 {
-                    html.Append(GetResourceHypertext("BoletoNetCore.BoletoImpressao.Parts.ReciboPagadorParte10.html"));
+                    html.Append(GetResourceHypertext("CodivaServiceWS.BoletoNetCore.BoletoImpressao.Parts.ReciboPagadorParte10.html"));
                 }
-                html.Append(GetResourceHypertext("BoletoNetCore.BoletoImpressao.Parts.ReciboPagadorParte4.html"));
-                html.Append(GetResourceHypertext("BoletoNetCore.BoletoImpressao.Parts.ReciboPagadorParte5.html"));
-                html.Append(GetResourceHypertext("BoletoNetCore.BoletoImpressao.Parts.ReciboPagadorParte6.html"));
-                html.Append(GetResourceHypertext("BoletoNetCore.BoletoImpressao.Parts.ReciboPagadorParte7.html"));
-                html.Append(GetResourceHypertext("BoletoNetCore.BoletoImpressao.Parts.ReciboPagadorParte8.html"));
+                html.Append(GetResourceHypertext("CodivaServiceWS.BoletoNetCore.BoletoImpressao.Parts.ReciboPagadorParte4.html"));
+                html.Append(GetResourceHypertext("CodivaServiceWS.BoletoNetCore.BoletoImpressao.Parts.ReciboPagadorParte5.html"));
+                html.Append(GetResourceHypertext("CodivaServiceWS.BoletoNetCore.BoletoImpressao.Parts.ReciboPagadorParte6.html"));
+                html.Append(GetResourceHypertext("CodivaServiceWS.BoletoNetCore.BoletoImpressao.Parts.ReciboPagadorParte7.html"));
+                html.Append(GetResourceHypertext("CodivaServiceWS.BoletoNetCore.BoletoImpressao.Parts.ReciboPagadorParte8.html"));
                 return html.ToString();
             }
             catch (Exception ex)
@@ -187,18 +198,18 @@ namespace BoletoNetCore
             try
             {
                 var html = new StringBuilder();
-                html.Append(GetResourceHypertext("BoletoNetCore.BoletoImpressao.Parts.ReciboBeneficiarioParte1.html"));
-                html.Append(GetResourceHypertext("BoletoNetCore.BoletoImpressao.Parts.ReciboBeneficiarioParte2.html"));
-                html.Append(GetResourceHypertext("BoletoNetCore.BoletoImpressao.Parts.ReciboBeneficiarioParte3.html"));
-                html.Append(GetResourceHypertext("BoletoNetCore.BoletoImpressao.Parts.ReciboBeneficiarioParte4.html"));
-                html.Append(GetResourceHypertext("BoletoNetCore.BoletoImpressao.Parts.ReciboBeneficiarioParte5.html"));
-                html.Append(GetResourceHypertext("BoletoNetCore.BoletoImpressao.Parts.ReciboBeneficiarioParte6.html"));
-                html.Append(GetResourceHypertext("BoletoNetCore.BoletoImpressao.Parts.ReciboBeneficiarioParte7.html"));
-                html.Append(GetResourceHypertext("BoletoNetCore.BoletoImpressao.Parts.ReciboBeneficiarioParte8.html"));
-                html.Append(GetResourceHypertext("BoletoNetCore.BoletoImpressao.Parts.ReciboBeneficiarioParte9.html"));
-                html.Append(GetResourceHypertext("BoletoNetCore.BoletoImpressao.Parts.ReciboBeneficiarioParte10.html"));
-                html.Append(GetResourceHypertext("BoletoNetCore.BoletoImpressao.Parts.ReciboBeneficiarioParte11.html"));
-                html.Append(GetResourceHypertext("BoletoNetCore.BoletoImpressao.Parts.ReciboBeneficiarioParte12.html"));
+                html.Append(GetResourceHypertext("CodivaServiceWS.BoletoNetCore.BoletoImpressao.Parts.ReciboBeneficiarioParte1.html"));
+                html.Append(GetResourceHypertext("CodivaServiceWS.BoletoNetCore.BoletoImpressao.Parts.ReciboBeneficiarioParte2.html"));
+                html.Append(GetResourceHypertext("CodivaServiceWS.BoletoNetCore.BoletoImpressao.Parts.ReciboBeneficiarioParte3.html"));
+                html.Append(GetResourceHypertext("CodivaServiceWS.BoletoNetCore.BoletoImpressao.Parts.ReciboBeneficiarioParte4.html"));
+                html.Append(GetResourceHypertext("CodivaServiceWS.BoletoNetCore.BoletoImpressao.Parts.ReciboBeneficiarioParte5.html"));
+                html.Append(GetResourceHypertext("CodivaServiceWS.BoletoNetCore.BoletoImpressao.Parts.ReciboBeneficiarioParte6.html"));
+                html.Append(GetResourceHypertext("CodivaServiceWS.BoletoNetCore.BoletoImpressao.Parts.ReciboBeneficiarioParte7.html"));
+                html.Append(GetResourceHypertext("CodivaServiceWS.BoletoNetCore.BoletoImpressao.Parts.ReciboBeneficiarioParte8.html"));
+                html.Append(GetResourceHypertext("CodivaServiceWS.BoletoNetCore.BoletoImpressao.Parts.ReciboBeneficiarioParte9.html"));
+                html.Append(GetResourceHypertext("CodivaServiceWS.BoletoNetCore.BoletoImpressao.Parts.ReciboBeneficiarioParte10.html"));
+                html.Append(GetResourceHypertext("CodivaServiceWS.BoletoNetCore.BoletoImpressao.Parts.ReciboBeneficiarioParte11.html"));
+                html.Append(GetResourceHypertext("CodivaServiceWS.BoletoNetCore.BoletoImpressao.Parts.ReciboBeneficiarioParte12.html"));
                 return html.ToString();
             }
             catch (Exception ex)
@@ -213,12 +224,12 @@ namespace BoletoNetCore
             {
                 var html = new StringBuilder();
 
-                html.Append(GetResourceHypertext("BoletoNetCore.BoletoImpressao.Parts.ComprovanteEntrega1.html"));
-                html.Append(GetResourceHypertext("BoletoNetCore.BoletoImpressao.Parts.ComprovanteEntrega2.html"));
-                html.Append(GetResourceHypertext("BoletoNetCore.BoletoImpressao.Parts.ComprovanteEntrega3.html"));
-                html.Append(GetResourceHypertext("BoletoNetCore.BoletoImpressao.Parts.ComprovanteEntrega4.html"));
-                html.Append(GetResourceHypertext("BoletoNetCore.BoletoImpressao.Parts.ComprovanteEntrega5.html"));
-                html.Append(GetResourceHypertext("BoletoNetCore.BoletoImpressao.Parts.ComprovanteEntrega6.html"));
+                html.Append(GetResourceHypertext("CodivaServiceWS.BoletoNetCore.BoletoImpressao.Parts.ComprovanteEntrega1.html"));
+                html.Append(GetResourceHypertext("CodivaServiceWS.BoletoNetCore.BoletoImpressao.Parts.ComprovanteEntrega2.html"));
+                html.Append(GetResourceHypertext("CodivaServiceWS.BoletoNetCore.BoletoImpressao.Parts.ComprovanteEntrega3.html"));
+                html.Append(GetResourceHypertext("CodivaServiceWS.BoletoNetCore.BoletoImpressao.Parts.ComprovanteEntrega4.html"));
+                html.Append(GetResourceHypertext("CodivaServiceWS.BoletoNetCore.BoletoImpressao.Parts.ComprovanteEntrega5.html"));
+                html.Append(GetResourceHypertext("CodivaServiceWS.BoletoNetCore.BoletoImpressao.Parts.ComprovanteEntrega6.html"));
 
                 html.Append(MostrarComprovanteEntregaLivre ? GetResourceHypertext("BoletoNetCore.BoletoImpressao.Parts.ComprovanteEntrega71.html") : GetResourceHypertext("BoletoNetCore.BoletoImpressao.Parts.ComprovanteEntrega7.html"));
 
@@ -227,7 +238,7 @@ namespace BoletoNetCore
             }
         }
 
-        private string MontaHtml(string urlImagemLogo, string urlImagemBarra, string imagemCodigoBarras, string pixStr = null)
+        private string MontaHtml(string urlImagemLogo, string urlImagemBarra, string imagemCodigoBarras, string pixStr = null, string codigoDebito = null)
         {
             var html = new StringBuilder();
             var enderecoBeneficiario = "";
@@ -235,7 +246,7 @@ namespace BoletoNetCore
 
             //Oculta o cabeçalho das instruções do boleto
             if (!OcultarInstrucoes)
-                html.Append(GeraHtmlInstrucoes());
+                html.Append(GeraHtmlInstrucoes(codigoDebito));
 
             if (!string.IsNullOrWhiteSpace(pixStr))
             {
@@ -244,10 +255,10 @@ namespace BoletoNetCore
 
             if (ExibirDemonstrativo && Boleto.Demonstrativos.Any())
             {
-                html.Append(GetResourceHypertext("BoletoNetCore.BoletoImpressao.Parts.ReciboBeneficiarioRelatorioValores.html"));
-                html.Append(GetResourceHypertext("BoletoNetCore.BoletoImpressao.Parts.ReciboBeneficiarioParte5.html"));
+                html.Append(GetResourceHypertext("CodivaServiceWS.BoletoNetCore.BoletoImpressao.Parts.ReciboBeneficiarioRelatorioValores.html"));
+                html.Append(GetResourceHypertext("CodivaServiceWS.BoletoNetCore.BoletoImpressao.Parts.ReciboBeneficiarioParte5.html"));
 
-                html.Append(GetResourceHypertext("BoletoNetCore.BoletoImpressao.Parts.CabecalhoTabelaDemonstrativo.html"));
+                html.Append(GetResourceHypertext("CodivaServiceWS.BoletoNetCore.BoletoImpressao.Parts.CabecalhoTabelaDemonstrativo.html"));
 
                 var grupoDemonstrativo = new StringBuilder();
 
@@ -257,7 +268,7 @@ namespace BoletoNetCore
 
                     foreach (var item in relatorio.Itens)
                     {
-                        grupoDemonstrativo.Append(GetResourceHypertext("BoletoNetCore.BoletoImpressao.Parts.GrupoDemonstrativo.html"));
+                        grupoDemonstrativo.Append(GetResourceHypertext("CodivaServiceWS.BoletoNetCore.BoletoImpressao.Parts.GrupoDemonstrativo.html"));
 
                         if (first)
                         {
@@ -275,7 +286,7 @@ namespace BoletoNetCore
                         grupoDemonstrativo = grupoDemonstrativo.Replace("@VALORITEM", item.Valor.ToString("C", CultureInfo.GetCultureInfo("pt-BR")));
                     }
 
-                    grupoDemonstrativo.Append(GetResourceHypertext("BoletoNetCore.BoletoImpressao.Parts.TotalDemonstrativo.html"));
+                    grupoDemonstrativo.Append(GetResourceHypertext("CodivaServiceWS.BoletoNetCore.BoletoImpressao.Parts.TotalDemonstrativo.html"));
                     grupoDemonstrativo = grupoDemonstrativo.Replace(
                         "@VALORTOTALGRUPO",
                         relatorio.Itens.Sum(c => c.Valor).ToString("C", CultureInfo.GetCultureInfo("pt-BR")));
@@ -292,7 +303,7 @@ namespace BoletoNetCore
                     html.Append(HtmlComprovanteEntrega);
                     //Html da linha pontilhada
                     if (OcultarReciboPagador)
-                        html.Append(GetResourceHypertext("BoletoNetCore.BoletoImpressao.Parts.ReciboPagadorParte8.html"));
+                        html.Append(GetResourceHypertext("CodivaServiceWS.BoletoNetCore.BoletoImpressao.Parts.ReciboPagadorParte8.html"));
                 }
 
                 //Oculta o recibo do sacabo do boleto
@@ -430,7 +441,7 @@ namespace BoletoNetCore
         /// <param name="srcBarra">Local apontado pela imagem de barra.</param>
         /// <param name="srcCodigoBarra">Local apontado pela imagem do código de barras.</param>
         /// <returns>StringBuilder conténdo o código html do boleto bancário.</returns>
-        protected StringBuilder HtmlOffLine(string textoNoComecoDoEmail, string srcLogo, string srcBarra, string srcCodigoBarra, bool usaCsspdf = false, string pixStr = null)
+        protected StringBuilder HtmlOffLine(string textoNoComecoDoEmail, string srcLogo, string srcBarra, string srcCodigoBarra, bool usaCsspdf = false, string pixStr = null, string codigoDebito = null)
         {//protected StringBuilder HtmlOffLine(string srcCorte, string srcLogo, string srcBarra, string srcPonto, string srcBarraInterna, string srcCodigoBarra)
             //OnLoad(EventArgs.Empty);
 
@@ -440,7 +451,7 @@ namespace BoletoNetCore
             {
                 html.Append(textoNoComecoDoEmail);
             }
-            html.Append(MontaHtml(srcLogo, srcBarra, "<img src=\"" + srcCodigoBarra + "\" alt=\"Código de Barras\" />", pixStr));
+            html.Append(MontaHtml(srcLogo, srcBarra, "<img src=\"" + srcCodigoBarra + "\" alt=\"Código de Barras\" />", pixStr, codigoDebito));
             HtmlOfflineFooter(html);
             return html;
         }
@@ -463,7 +474,7 @@ namespace BoletoNetCore
 
             #region Css
             {
-                var arquivoCss = usaCsspdf ? "BoletoNetCore.BoletoImpressao.BoletoNetPDF.css" : "BoletoNetCore.BoletoImpressao.BoletoNet.css";
+                var arquivoCss = usaCsspdf ? "CodivaServiceWS.BoletoNetCore.BoletoImpressao.BoletoNetPDF.css" : "CodivaServiceWS.BoletoNetCore.BoletoImpressao.BoletoNet.css";
                 var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(arquivoCss);
 
                 using (var sr = new StreamReader(stream))
@@ -514,7 +525,7 @@ namespace BoletoNetCore
             var corpoDoEmail = new StringBuilder();
 
             var linkedResources = new List<LinkedResource>();
-            HtmlOfflineHeader(corpoDoEmail);
+            //HtmlOfflineHeader(corpoDoEmail);
             if (textoNoComecoDoEmail != null && textoNoComecoDoEmail != "")
             {
                 corpoDoEmail.Append(textoNoComecoDoEmail);
@@ -821,7 +832,7 @@ namespace BoletoNetCore
         /// <desenvolvedor>Iuri André Stona, Olavo Rocha Neto</desenvolvedor>
         /// <criacao>23/01/2014</criacao>
         /// <alteracao>07/07/2019</alteracao>
-        public string MontaHtmlEmbedded(bool convertLinhaDigitavelToImage = false, bool usaCsspdf = false, string urlImagemLogoBeneficiario = null, string pixString = null)
+        public string MontaHtmlEmbedded(bool convertLinhaDigitavelToImage = false, bool usaCsspdf = false, string codigoDebito = null, string urlImagemLogoBeneficiario = null, string pixString = null)
         {
             //OnLoad(EventArgs.Empty);
 
@@ -858,7 +869,7 @@ namespace BoletoNetCore
                 _vLocalLogoBeneficiario = urlImagemLogoBeneficiario;
             }
 
-            var s = HtmlOffLine(null, fnLogo, fnBarra, fnCodigoBarras, usaCsspdf, pixString).ToString();
+            var s = HtmlOffLine(null, fnLogo, fnBarra, fnCodigoBarras, usaCsspdf, pixString, codigoDebito).ToString();
 
             if (convertLinhaDigitavelToImage)
             {
@@ -870,6 +881,100 @@ namespace BoletoNetCore
 
 
         #endregion Geração do Html OffLine
+
+        /// <summary>
+        /// Lista de Boletos, objetos do tipo
+        /// BoletoBancario
+        /// </summary>
+        /// <param name="boletos">Lista de Boletos, objetos do tipo BoletoBancario</param>
+        /// <param name="tituloNaView">Título Que aparecerá na Aba do Navegador</param>
+        /// <param name="CustomSwitches">Custom WkHtmlToPdf global options</param>
+        /// <param name="tituloPDF">Título No Início do PDF</param>
+        /// <param name="PretoBranco">Preto e Branco = true</param>
+        /// <param name="convertLinhaDigitavelToImage">bool Converter a Linha Digitavel Em Imagem</param>
+        /// <param name="BoletosPorPagina">Quantidade de Boletos até o próximo LineBreak. Lembre de Utilizar o Zoom para ajustar a página</param>
+        /// <param name="ZoomPercent">Percentual da Scala do PDF. Para 3 Boletos na mesma Página com Carnê utilize 80%</param>				
+        /// <returns>byte[], Vetor de bytes do PDF</returns>
+        public byte[] MontaBytesListaBoletosPDF(List<BoletoBancario> boletos, string codigoDebito = null, string tituloNaView = "", string CustomSwitches = "", string tituloPDF = "", bool PretoBranco = false, bool convertLinhaDigitavelToImage = false, int BoletosPorPagina = 1, float ZoomPercent = 100)
+        {
+            StringBuilder htmlBoletos = new StringBuilder();
+            HtmlOfflineHeader(htmlBoletos, true, tituloNaView);
+
+            if (!string.IsNullOrEmpty(tituloPDF))
+            {
+                htmlBoletos.Append("<br/><center><h1>");
+                htmlBoletos.Append(tituloPDF);
+                htmlBoletos.Append("</h1></center><br/>");
+            }
+            int qtdeBoletosPagina = 0;
+            foreach (BoletoBancario boleto in boletos)
+            {
+                qtdeBoletosPagina++;
+
+                if (qtdeBoletosPagina % BoletosPorPagina == 0)
+                {
+                    htmlBoletos.Append("<div class='break'>");
+                    qtdeBoletosPagina = 0;
+                }
+                else
+                {
+                    htmlBoletos.Append("<div>");
+                }
+                htmlBoletos.Append(boleto.MontaHtmlEmbedded(convertLinhaDigitavelToImage, true, codigoDebito));
+                htmlBoletos.Append("</div>");
+            }
+            HtmlOfflineFooter(htmlBoletos);
+
+            var converter = new NReco.PdfGenerator.HtmlToPdfConverter()
+            {
+                CustomWkHtmlArgs = CustomSwitches,
+                Grayscale = PretoBranco,
+                Zoom = ZoomPercent / 100
+            };
+            if (!string.IsNullOrEmpty(this.PdfToolPath))
+            {
+                converter.PdfToolPath = this.PdfToolPath;
+            }
+            if (!string.IsNullOrEmpty(this.TempFilesPath))
+            {
+                converter.TempFilesPath = this.TempFilesPath;
+            }
+
+            return converter.GeneratePdf(htmlBoletos.ToString());
+        }
+
+        /// <summary>
+        /// Monta o Header de um email com pelo menos um boleto dentro.
+        /// </summary>
+        /// <param name="saida">StringBuilder onde o conteudo sera salvo.</param>
+        protected static void HtmlOfflineHeader(StringBuilder html, bool usaCSSPDF = false, string titulo = "Boleto.Net")
+        {
+            html.Append("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n");
+            html.Append("<html xmlns=\"http://www.w3.org/1999/xhtml\">\n");
+            html.Append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\n");
+            html.Append("<meta charset=\"utf-8\"/>\n");
+            html.Append("<head>");
+            html.Append("    <title>" + titulo + "</title>\n");
+
+            #region Css
+            {
+                string arquivoCSS = usaCSSPDF ? "CodivaServiceWS.BoletoNetCore.BoletoImpressao.BoletoNetPDF.css" : "CodivaServiceWS.BoletoNet.BoletoImpressao.BoletoNet.css";
+                Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(arquivoCSS);
+
+                using (StreamReader sr = new StreamReader(stream))
+                {
+                    html.Append("<style>\n");
+                    html.Append(sr.ReadToEnd());
+                    html.Append("</style>\n");
+                    sr.Close();
+                    sr.Dispose();
+                }
+            }
+            #endregion Css
+
+            html.Append("     </head>\n");
+            html.Append("<body>\n");
+        }
 
         public SKBitmap GeraImagemCodigoBarras(Boleto boleto)
         {

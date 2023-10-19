@@ -4,18 +4,25 @@ using CodivaServiceWS.Service.Interface;
 using Ninject;
 using Ninject.Web;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.Entity.Core.Mapping;
+using System.Data.SqlTypes;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.PeerToPeer;
 using System.Reflection;
+using System.Reflection.Metadata;
 using System.Security.Policy;
+using System.Text;
 using System.Web;
+using System.Web.Script.Services;
 using System.Web.Services;
+using System.Web.Services.Description;
 using System.Web.Services.Protocols;
 using System.Xml;
+using System.Xml.Linq;
 using static CodivaServiceWS.Enum.Enum;
 
 namespace CodivaServiceWS
@@ -135,6 +142,77 @@ namespace CodivaServiceWS
             sw.WriteLine(DateTime.Now.ToString() + " " + mensagem);
 
             sw.Close();
+        }
+
+        [WebMethod]
+        [ScriptMethod(UseHttpGet = true)]
+        public XmlDocument GetWSDL()
+        {
+            string nameElement = string.Empty;
+            bool elementIsEmpty = false;
+            bool excluirTagElement = false;
+
+            StringBuilder sb = new StringBuilder();
+
+            WebClient client = new WebClient();
+
+            //var wsdlOriginal = client.DownloadString("http://10.103.0.41:8083/WSCodivaService.asmx?wsdl");
+            var wsdlOriginal = client.DownloadString("https://localhost:44345/WSCodivaService.asmx?wsdl");
+
+            byte[] byteArray = Encoding.UTF8.GetBytes(wsdlOriginal);
+
+            MemoryStream stream = new MemoryStream(byteArray);
+
+            XmlTextReader reader = new XmlTextReader(stream);
+
+            while (reader.Read())
+            {
+                elementIsEmpty = reader.IsEmptyElement;
+
+                excluirTagElement = reader.Name == "s:element" && !elementIsEmpty ? true : false;
+
+                if (excluirTagElement)
+                {
+                    nameElement = reader.GetAttribute("name");
+                    
+                    continue;
+                }
+
+                switch (reader.NodeType)
+                {
+                    case XmlNodeType.Element:
+
+                        sb.Append("<" + reader.Name);
+
+                        if (!string.IsNullOrEmpty(nameElement))
+                        {
+                            sb.Append($" name='{nameElement}'");
+
+                            nameElement = string.Empty;
+                        }
+
+                        while (reader.MoveToNextAttribute())
+                            sb.Append(" " + reader.Name + "='" + reader.Value + "'");                       
+                        sb.AppendLine(elementIsEmpty ? "/>" : ">");
+
+                        break;
+
+                    case XmlNodeType.EndElement:
+                        
+                        sb.Append("</" + reader.Name);
+                        sb.AppendLine(">");
+
+                        break;
+                }
+            }
+
+            var wsdlModificado = sb.ToString();
+
+            XmlDocument xml = new XmlDocument();
+
+            xml.LoadXml(wsdlModificado);
+
+            return xml;
         }
     }
 }

@@ -10,6 +10,7 @@ namespace PagamentoDebitoService.DTO
     {
         public string NumeroProcesso { get; set; }
         public string NumeroReferencia { get; set; }
+        public string NossoNumero { get; set; }
         public DateTime DataPagamento { get; set; }
         public DateTime DataVencimento { get; set; }
         public decimal ValorPago { get; set; }

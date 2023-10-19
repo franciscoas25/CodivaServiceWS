@@ -40,8 +40,8 @@ namespace CodivaServiceWS.Dapper.Implementation
                                     VL_DESCONTO,
                                     DT_ALTERACAO,
                                     DT_VENCIMENTO, 
-                                    DT_INICIAL
-                                    --ST_DEBITO_EXIGIVEL
+                                    DT_INICIAL,
+                                    ST_DEBITO_EXIGIVEL
                                 )
                                 VALUES
                                 (
@@ -55,12 +55,12 @@ namespace CodivaServiceWS.Dapper.Implementation
                                     'N',
                                     {tipoDebito},
                                     {valorMulta},
-                                    500,
+                                    0,
                                     0,
                                     to_date('{DateTime.Now}', 'dd/mm/yyyy HH24:mi:ss'),
-                                    to_date('{dataVencimento}', 'dd/mm/yyyy HH24:mi:ss'),
-                                    to_date('{dataMulta}', 'dd/mm/yyyy HH24:mi:ss')
-                                    --'N'
+                                    null,
+                                    to_date('{dataMulta}', 'dd/mm/yyyy HH24:mi:ss'),
+                                    'N'
                                 )";
 
                 var result = connection.Execute(sql);

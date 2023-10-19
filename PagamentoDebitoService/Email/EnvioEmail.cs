@@ -28,24 +28,34 @@ namespace PagamentoDebitoService.Email
                 if (!lstGuiasPagas.Any())
                     sb.AppendLine("Não foram constatados pagamentos de multa para esta data");
 
+                sb.AppendLine("<table>");
+
+                sb.Append("<tr>");
+                sb.Append("<th style='border: 1px solid'>Número do processo administrativo sanitário</th>");
+                sb.Append("<th style='border: 1px solid'>Número de referência da GRU</th>");
+                sb.Append("<th style='border: 1px solid'>Data do pagamento</th>");
+                sb.Append("<th style='border: 1px solid'>Valor pago</th>");
+                sb.Append("</tr>");
+
                 foreach (var guia in lstGuiasPagas)
                 {
-                    sb.AppendLine($"Número do processo administrativo sanitário: {guia.NumeroProcesso}");
-                    sb.Append("<br/>");
-                    sb.AppendLine($"Número de referência da GRU: {guia.NumeroReferencia}");
-                    sb.Append("<br/>");
-                    sb.AppendLine($"Data do pagamento: {guia.DataPagamento}");
-                    sb.Append("<br/>");
-                    sb.AppendLine($"<b>Valor pago: R$ {guia.ValorPago}</b>");
-                    sb.Append("<br/>");
-                    sb.Append("<br/>");
+                    sb.Append("<tr>");
+                    sb.AppendLine($"<td style='border: 1px solid; text-align: right'>{guia.NumeroProcesso}</td>");
+                    sb.AppendLine($"<td style='border: 1px solid; text-align: right'>{guia.NumeroReferencia}</td>");
+                    sb.AppendLine($"<td style='border: 1px solid; text-align: right'>{guia.DataPagamento.ToShortDateString()}</td>");
+                    sb.AppendLine($"<td style='border: 1px solid; text-align: right'>R$ {guia.ValorPago.ToString("##,###.##")}</td>");
+                    sb.Append("</tr>");                    
                 }
 
-                var smtpClient = new SmtpClient(host, port);
+                sb.AppendLine("</table>");
+
+                var smtpClient = new SmtpClient(host, port);                
+                smtpClient.Timeout = 10000;
+
                 smtpClient.EnableSsl = true;
-                smtpClient.Timeout = 7200;
-                smtpClient.UseDefaultCredentials = false;
+                //smtpClient.UseDefaultCredentials = false;
                 smtpClient.Credentials = new NetworkCredential("franciscoas25@gmail.com", "ycfq ztwk gmyi vwst");
+                //smtpClient.Credentials = new NetworkCredential("rni@anvisa.gov.br", "");
 
                 mailMessage.From = new MailAddress(remetente, nomeEmail);
                 mailMessage.Body = sb.ToString();
@@ -58,7 +68,7 @@ namespace PagamentoDebitoService.Email
             }
             catch(Exception ex)
             {
-                return;
+                throw new Exception(ex.Message);
             }
         }
     }

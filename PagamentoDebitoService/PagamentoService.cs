@@ -44,33 +44,52 @@ namespace PagamentoDebitoService
             {
                 _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
 
+                Console.WriteLine($"{DateTime.Now} Obtendo lista de guias pagas...");
+                
                 var lstGuiasPagas = ObterGuiasPagas(_connectionString);
 
                 if (lstGuiasPagas.Any())
+                {
+                    Console.WriteLine($"{DateTime.Now} Foram encontradas {lstGuiasPagas.Count()} guias pagas.");
+                    Console.WriteLine($"{DateTime.Now} Gerando comprovantes das guias pagas...");
+
                     GerarComprovantesPagamento(lstGuiasPagas);
 
-                EnviarEmail(_lstDestinatarios, lstGuiasPagas, _assunto, _remetente, _nomeEmail, _host, _port);
+                    Console.WriteLine($"{DateTime.Now} Comprovantes gerados com sucesso!");
+                }
 
-                var lstGuiasVencidas = ObterGuiasVencidas(_connectionString);
+                var retorno = EnviarEmail(_lstDestinatarios, lstGuiasPagas, _assunto, _remetente, _nomeEmail, _host, _port);
 
-                if (lstGuiasVencidas.Any())
-                    GerarComprovantesNaoQuitacao(lstGuiasVencidas);
+                if (retorno.sucesso)
+                    Console.WriteLine($"{DateTime.Now} (Guias pagas) Email enviado com sucesso!");
+                else
+                    Console.WriteLine($"{DateTime.Now} (Guias pagas) Falha ao enviar email => Erro: {retorno.msgErro}");
 
-                EnviarEmail(_lstDestinatarios, lstGuiasVencidas, _assunto, _remetente, _nomeEmail, _host, _port);
+                //var lstGuiasVencidas = ObterGuiasVencidas(_connectionString);
+
+                //if (lstGuiasVencidas.Any())
+                //    GerarComprovantesNaoQuitacao(lstGuiasVencidas);
+
+                //if (EnviarEmail(_lstDestinatarios, lstGuiasVencidas, _assunto, _remetente, _nomeEmail, _host, _port))
+                //    Console.WriteLine($"{DateTime.Now} (Guias vencidas) Email enviado com sucesso!");
+                //else
+                //    Console.WriteLine($"{DateTime.Now} (Guias vencidas) Falha ao enviar email.");
 
                 await Task.Delay(10000, stoppingToken);
             }
         }
 
-        private void EnviarEmail(string lstDestinatarios, IEnumerable<DadosGuiaDto> lstGuias, string assunto, string remetente, string nomeEmail, string host, int port)
+        private (bool sucesso, string msgErro) EnviarEmail(string lstDestinatarios, IEnumerable<DadosGuiaDto> lstGuias, string assunto, string remetente, string nomeEmail, string host, int port)
         {
             try
             {
                 EnvioEmail.Send(lstDestinatarios, lstGuias, assunto, remetente, nomeEmail, _host, _port);
+
+                return (true, "");
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                return (false, ex.Message);
             }
         }
 
@@ -134,10 +153,11 @@ namespace PagamentoDebitoService
                               <br/>
                               <table>
                                  <tr><td><b>Número de Referência: </b>{guia.NumeroReferencia}</td></tr>
+                                 <tr><td><b>Nosso Número: </b>{guia.NossoNumero}</td></tr>
                                  <tr><td><b>Data de Emissão: </b>{DateTime.Now}</td></tr>
                                  <tr><td><b>Data de Pagamento: </b>{guia.DataPagamento}</td></tr>
-                                 <tr><td><b>Valor da Guia: </b>R$ {guia.ValorPago}</td></tr>
-                                 <tr><td><b>Valor Pago: </b>R$ {guia.ValorPago}</td></tr>
+                                 <tr><td><b>Valor da Guia: </b>R$ {guia.ValorPago.ToString("##,###.##")}</td></tr>
+                                 <tr><td><b>Valor Pago: </b>R$ {guia.ValorPago.ToString("##,###.##")}</td></tr>
                               </table>
                               <br/>
                               <br/>

@@ -19,6 +19,8 @@ using BrazilHolidays.Net;
 using System.Web;
 using BoletoNetCore;
 using Grpc.Core.Utils;
+using System.Text;
+using CodivaServiceWS.serviceRegistroBoleto;
 
 namespace CodivaServiceWS.Service.Implementation
 {
@@ -172,7 +174,7 @@ namespace CodivaServiceWS.Service.Implementation
                     {
                         Codigo = parametrosRequisicao.numeroConvenio, //ced.ID.ToString().PadLeft(7, '0'),
                         //Convenio = Convert.ToInt64(parametrosRequisicao.numeroConvenio),
-                        CPFCNPJ = parametrosRequisicao.numeroInscricaoPagador,
+                        CPFCNPJ = "03112386000111",
                         Nome = "AGÊNCIA NACIONAL DE VIGILÂNCIA SANITÁRIA - ANVISA",
                         ContaBancaria = contaBancaria
                     };
@@ -233,7 +235,8 @@ namespace CodivaServiceWS.Service.Implementation
                     {
                         Boleto = boleto,
                         MostrarCodigoCarteira = false,
-                        MostrarComprovanteEntrega = false
+                        MostrarComprovanteEntrega = false,
+                        OcultarReciboPagador = true
                     };
 
                     boleto_bancario.Boleto.ValidarDados();
@@ -242,9 +245,8 @@ namespace CodivaServiceWS.Service.Implementation
 
                     lstBoletos.Add(boleto_bancario);
 
-                    //var bytes = boleto_bancario.MontaBytesListaBoletosPDF(lstBoletos);
-                    var bytes = boleto_bancario.MontaHtmlEmbedded();
-
+                    var bytes = boleto_bancario.MontaBytesListaBoletosPDF(lstBoletos, codigoDebito.ToString());
+                    
                     string diretorioBoleto = System.Web.HttpContext.Current.Server.MapPath("./Boleto");
 
                     if (!Directory.Exists(diretorioBoleto))
@@ -252,10 +254,10 @@ namespace CodivaServiceWS.Service.Implementation
 
                     string pathBoleto = Path.Combine(diretorioBoleto, codigoDebito.ToString() + "_Boleto.pdf");
 
-                    //using (var fs = new FileStream(pathBoleto, FileMode.Create, FileAccess.Write))
-                    //{
-                    //    fs.Write(bytes, 0, bytes.Length);
-                    //}
+                    using (var fs = new FileStream(pathBoleto, FileMode.Create, FileAccess.Write))
+                    {
+                        fs.Write(bytes, 0, bytes.Length);
+                    }
 
                     //HttpClient client = new HttpClient();
                     //client.BaseAddress = new Uri("https://unigru-pre.anvisa.gov.br");
