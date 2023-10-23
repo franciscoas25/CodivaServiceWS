@@ -1,0 +1,700 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:tns="http://anvisa.gov.br/ns/unigru" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns1="http://schemas.xmlsoap.org/soap/http" name="GuiaService" targetNamespace="http://anvisa.gov.br/ns/unigru" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <xs:schema attributeFormDefault="unqualified" elementFormDefault="unqualified" targetNamespace="http://anvisa.gov.br/ns/unigru" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:element name="boletoAvulsoRegistradoBB" type="tns:boletoAvulsoRegistradoBB" />
+      <xs:element name="boletoAvulsoRegistradoBBResponse" type="tns:boletoAvulsoRegistradoBBResponse" />
+      <xs:element name="boletoRegistradoBB" type="tns:boletoRegistradoBB" />
+      <xs:element name="boletoRegistradoBBEmbarcacoes" type="tns:boletoRegistradoBBEmbarcacoes" />
+      <xs:element name="boletoRegistradoBBEmbarcacoesResponse" type="tns:boletoRegistradoBBEmbarcacoesResponse" />
+      <xs:element name="boletoRegistradoBBGuiaComplementar" type="tns:boletoRegistradoBBGuiaComplementar" />
+      <xs:element name="boletoRegistradoBBGuiaComplementarResponse" type="tns:boletoRegistradoBBGuiaComplementarResponse" />
+      <xs:element name="boletoRegistradoBBGuiaModalidade" type="tns:boletoRegistradoBBGuiaModalidade" />
+      <xs:element name="boletoRegistradoBBGuiaModalidadeResponse" type="tns:boletoRegistradoBBGuiaModalidadeResponse" />
+      <xs:element name="boletoRegistradoBBGuiaMultipla" type="tns:boletoRegistradoBBGuiaMultipla" />
+      <xs:element name="boletoRegistradoBBGuiaMultiplaResponse" type="tns:boletoRegistradoBBGuiaMultiplaResponse" />
+      <xs:element name="boletoRegistradoBBResponse" type="tns:boletoRegistradoBBResponse" />
+      <xs:element name="buscarGuiasPorTransacao" type="tns:buscarGuiasPorTransacao" />
+      <xs:element name="buscarGuiasPorTransacaoResponse" type="tns:buscarGuiasPorTransacaoResponse" />
+      <xs:element name="buscarTaxa" type="tns:buscarTaxa" />
+      <xs:element name="buscarTaxaEmbarcacao" type="tns:buscarTaxaEmbarcacao" />
+      <xs:element name="buscarTaxaEmbarcacaoResponse" type="tns:buscarTaxaEmbarcacaoResponse" />
+      <xs:element name="buscarTaxaResponse" type="tns:buscarTaxaResponse" />
+      <xs:element name="gerarGuia" type="tns:gerarGuia" />
+      <xs:element name="gerarGuiaComplementar" type="tns:gerarGuiaComplementar" />
+      <xs:element name="gerarGuiaComplementarResponse" type="tns:gerarGuiaComplementarResponse" />
+      <xs:element name="gerarGuiaEmbarcacoes" type="tns:gerarGuiaEmbarcacoes" />
+      <xs:element name="gerarGuiaEmbarcacoesResponse" type="tns:gerarGuiaEmbarcacoesResponse" />
+      <xs:element name="gerarGuiaModalidade" type="tns:gerarGuiaModalidade" />
+      <xs:element name="gerarGuiaModalidadeResponse" type="tns:gerarGuiaModalidadeResponse" />
+      <xs:element name="gerarGuiaMultipla" type="tns:gerarGuiaMultipla" />
+      <xs:element name="gerarGuiaMultiplaResponse" type="tns:gerarGuiaMultiplaResponse" />
+      <xs:element name="gerarGuiaResponse" type="tns:gerarGuiaResponse" />
+      <xs:element name="gerarGuiaSisparPF" type="tns:gerarGuiaSisparPF" />
+      <xs:element name="gerarGuiaSisparPFResponse" type="tns:gerarGuiaSisparPFResponse" />
+      <xs:element name="gerarGuiaSisparPJ" type="tns:gerarGuiaSisparPJ" />
+      <xs:element name="gerarGuiaSisparPJResponse" type="tns:gerarGuiaSisparPJResponse" />
+      <xs:complexType name="gerarGuiaSisparPF">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="cpf" type="xs:string" />
+          <xs:element minOccurs="0" name="valor" type="xs:decimal" />
+          <xs:element name="numeroParcela" type="xs:int" />
+          <xs:element name="quantidadeParcelas" type="xs:int" />
+          <xs:element minOccurs="0" name="vencimento" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="observacao" type="xs:string" />
+          <xs:element minOccurs="0" name="referencia" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="gerarGuiaSisparPFResponse">
+        <xs:sequence>
+          <xs:element name="guia" type="xs:int" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="ServiceFault">
+        <xs:sequence>
+          <xs:element name="codigo" type="xs:int" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="gerarGuia">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="transacao" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="gerarGuiaResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="guia" type="tns:Guia" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="Guia">
+        <xs:sequence>
+          <xs:element name="ano" type="xs:int" />
+          <xs:element name="numero" type="xs:int" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="gerarGuiaComplementar">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="transacao" type="xs:string" />
+          <xs:element minOccurs="0" name="valor" type="xs:decimal" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="gerarGuiaComplementarResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="guia" type="tns:Guia" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="gerarGuiaModalidade">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="transacao" type="xs:string" />
+          <xs:element minOccurs="0" name="numeroDocModalidade" type="xs:string" />
+          <xs:element minOccurs="0" name="idModalidadeImportacao" type="xs:int" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="gerarGuiaModalidadeResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="guia" type="tns:Guia" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="buscarGuiasPorTransacao">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="numeroTransacao" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="buscarGuiasPorTransacaoResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="guiaDTO" type="tns:guiaDTO" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="guiaDTO">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="ano" type="xs:int" />
+          <xs:element minOccurs="0" name="dataVencimento" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="numero" type="xs:int" />
+          <xs:element minOccurs="0" name="situacao" type="xs:string" />
+          <xs:element minOccurs="0" name="valorTaxa" type="xs:decimal" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="boletoRegistradoBBGuiaComplementar">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="requisicaoBoletoRegistrado" type="tns:requisicaoBoletoRegistrado" />
+          <xs:element minOccurs="0" name="valor" type="xs:decimal" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="requisicaoBoletoRegistrado">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="idSistema" type="xs:string" />
+          <xs:element minOccurs="0" name="transacao" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="boletoRegistradoBBGuiaComplementarResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="respostaBoletoRegistrado" type="tns:respostaBoletoRegistrado" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="respostaBoletoRegistrado">
+        <xs:sequence>
+          <xs:element name="codigoBoletoRegistrado" type="xs:double" />
+          <xs:element name="codigoErro" type="xs:double" />
+          <xs:element minOccurs="0" name="guiaArrecad" type="tns:Guia" />
+          <xs:element minOccurs="0" name="mensagemErro" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="buscarTaxaEmbarcacao">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="cnpj" type="xs:string" />
+          <xs:element minOccurs="0" name="assunto" type="xs:string" />
+          <xs:element minOccurs="0" name="coEmbarcacao" type="xs:int" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="buscarTaxaEmbarcacaoResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="taxa" type="tns:Taxa" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="Taxa">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="tipoIsencao" type="xs:string" />
+          <xs:element minOccurs="0" name="valorTaxa" type="xs:decimal" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="gerarGuiaEmbarcacoes">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="transacao" type="xs:string" />
+          <xs:element minOccurs="0" name="noBandeira" type="xs:string" />
+          <xs:element minOccurs="0" name="nuEmbarcacao" type="xs:string" />
+          <xs:element minOccurs="0" name="noEmbarcacao" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="gerarGuiaEmbarcacoesResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="guia" type="tns:Guia" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="gerarGuiaMultipla">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="transacao" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="assuntos" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="gerarGuiaMultiplaResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="guia" type="tns:Guia" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="gerarGuiaSisparPJ">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="cnpj" type="xs:string" />
+          <xs:element minOccurs="0" name="valor" type="xs:decimal" />
+          <xs:element name="numeroParcela" type="xs:int" />
+          <xs:element name="quantidadeParcelas" type="xs:int" />
+          <xs:element minOccurs="0" name="vencimento" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="observacao" type="xs:string" />
+          <xs:element minOccurs="0" name="referencia" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="gerarGuiaSisparPJResponse">
+        <xs:sequence>
+          <xs:element name="guia" type="xs:int" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="boletoRegistradoBBGuiaModalidade">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="requisicaoBoletoRegistrado" type="tns:requisicaoBoletoRegistrado" />
+          <xs:element minOccurs="0" name="numeroDocModalidade" type="xs:string" />
+          <xs:element minOccurs="0" name="idModalidadeImportacao" type="xs:int" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="boletoRegistradoBBGuiaModalidadeResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="respostaBoletoRegistrado" type="tns:respostaBoletoRegistrado" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="boletoRegistradoBBGuiaMultipla">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="requisicaoBoletoRegistrado" type="tns:requisicaoBoletoRegistrado" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="assuntos" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="boletoRegistradoBBGuiaMultiplaResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="respostaBoletoRegistrado" type="tns:respostaBoletoRegistrado" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="boletoAvulsoRegistradoBB">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="requisicaoBoletoRegistradoAvulso" type="tns:requisicaoBoletoRegistradoAvulso" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="requisicaoBoletoRegistradoAvulso">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="codigoAceiteTitulo" type="xs:string" />
+          <xs:element minOccurs="0" name="codigoChaveUsuario" type="xs:string" />
+          <xs:element minOccurs="0" name="codigoModalidadeTitulo" type="xs:string" />
+          <xs:element minOccurs="0" name="codigoTipoCanalSolicitacao" type="xs:string" />
+          <xs:element minOccurs="0" name="codigoTipoContaCaucao" type="xs:string" />
+          <xs:element minOccurs="0" name="codigoTipoDesconto" type="xs:string" />
+          <xs:element minOccurs="0" name="codigoTipoInscricaoAvalista" type="xs:string" />
+          <xs:element minOccurs="0" name="codigoTipoInscricaoPagador" type="xs:string" />
+          <xs:element minOccurs="0" name="codigoTipoJuroMora" type="xs:string" />
+          <xs:element minOccurs="0" name="codigoTipoMulta" type="xs:string" />
+          <xs:element minOccurs="0" name="codigoTipoTitulo" type="xs:string" />
+          <xs:element minOccurs="0" name="dataDescontoTitulo" type="xs:string" />
+          <xs:element minOccurs="0" name="dataEmissaoTitulo" type="xs:string" />
+          <xs:element minOccurs="0" name="dataMultaTitulo" type="xs:string" />
+          <xs:element minOccurs="0" name="dataVencimentoTitulo" type="xs:string" />
+          <xs:element minOccurs="0" name="idSistema" type="xs:string" />
+          <xs:element minOccurs="0" name="indicadorPermissaoRecebimentoParcial" type="xs:string" />
+          <xs:element minOccurs="0" name="nomeAvalistaTitulo" type="xs:string" />
+          <xs:element minOccurs="0" name="nomeBairroPagador" type="xs:string" />
+          <xs:element minOccurs="0" name="nomeMunicipioPagador" type="xs:string" />
+          <xs:element minOccurs="0" name="nomePagador" type="xs:string" />
+          <xs:element minOccurs="0" name="numeroCarteira" type="xs:string" />
+          <xs:element minOccurs="0" name="numeroCepPagador" type="xs:string" />
+          <xs:element minOccurs="0" name="numeroConvenio" type="xs:string" />
+          <xs:element minOccurs="0" name="numeroInscricaoAvalista" type="xs:string" />
+          <xs:element minOccurs="0" name="numeroInscricaoPagador" type="xs:string" />
+          <xs:element minOccurs="0" name="numeroVariacaoCarteira" type="xs:string" />
+          <xs:element minOccurs="0" name="percentualDescontoTitulo" type="xs:string" />
+          <xs:element minOccurs="0" name="percentualJuroMoraTitulo" type="xs:string" />
+          <xs:element minOccurs="0" name="percentualMultaTitulo" type="xs:string" />
+          <xs:element minOccurs="0" name="quantidadeDiaProtesto" type="xs:string" />
+          <xs:element minOccurs="0" name="siglaUfPagador" type="xs:string" />
+          <xs:element minOccurs="0" name="textoCampoUtilizacaoBeneficiario" type="xs:string" />
+          <xs:element minOccurs="0" name="textoDescricaoTipoTitulo" type="xs:string" />
+          <xs:element minOccurs="0" name="textoEnderecoPagador" type="xs:string" />
+          <xs:element minOccurs="0" name="textoMensagemBloquetoOcorrencia" type="xs:string" />
+          <xs:element minOccurs="0" name="textoNumeroTelefonePagador" type="xs:string" />
+          <xs:element minOccurs="0" name="textoNumeroTituloBeneficiario" type="xs:string" />
+          <xs:element minOccurs="0" name="textoNumeroTituloCliente" type="xs:string" />
+          <xs:element minOccurs="0" name="valorAbatimentoTitulo" type="xs:string" />
+          <xs:element minOccurs="0" name="valorDescontoTitulo" type="xs:string" />
+          <xs:element minOccurs="0" name="valorJuroMoraTitulo" type="xs:string" />
+          <xs:element minOccurs="0" name="valorMultaTitulo" type="xs:string" />
+          <xs:element minOccurs="0" name="valorOriginalTitulo" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="boletoAvulsoRegistradoBBResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="respostaBoletoRegistrado" type="tns:respostaBoletoRegistrado" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="boletoRegistradoBBEmbarcacoes">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="requisicaoBoletoRegistradoEmbarcacoes" type="tns:requisicaoBoletoRegistradoEmbarcacoes" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="requisicaoBoletoRegistradoEmbarcacoes">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="idSistema" type="xs:string" />
+          <xs:element minOccurs="0" name="noBandeira" type="xs:string" />
+          <xs:element minOccurs="0" name="noEmbarcacao" type="xs:string" />
+          <xs:element minOccurs="0" name="nuEmbarcacao" type="xs:string" />
+          <xs:element minOccurs="0" name="transacao" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="boletoRegistradoBBEmbarcacoesResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="respostaBoletoRegistrado" type="tns:respostaBoletoRegistrado" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="boletoRegistradoBB">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="requisicaoBoletoRegistrado" type="tns:requisicaoBoletoRegistrado" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="boletoRegistradoBBResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="respostaBoletoRegistrado" type="tns:respostaBoletoRegistrado" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="buscarTaxa">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="cnpj" type="xs:string" />
+          <xs:element minOccurs="0" name="assunto" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="buscarTaxaResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="taxa" type="tns:Taxa" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ServiceException" nillable="true" type="tns:ServiceFault" />
+    </xs:schema>
+  </wsdl:types>
+  <wsdl:message name="buscarTaxaEmbarcacaoResponse">
+    <wsdl:part name="parameters" element="tns:buscarTaxaEmbarcacaoResponse" />
+  </wsdl:message>
+  <wsdl:message name="gerarGuiaComplementar">
+    <wsdl:part name="parameters" element="tns:gerarGuiaComplementar" />
+  </wsdl:message>
+  <wsdl:message name="buscarGuiasPorTransacao">
+    <wsdl:part name="parameters" element="tns:buscarGuiasPorTransacao" />
+  </wsdl:message>
+  <wsdl:message name="gerarGuiaSisparPJResponse">
+    <wsdl:part name="parameters" element="tns:gerarGuiaSisparPJResponse" />
+  </wsdl:message>
+  <wsdl:message name="boletoRegistradoBBGuiaModalidadeResponse">
+    <wsdl:part name="parameters" element="tns:boletoRegistradoBBGuiaModalidadeResponse" />
+  </wsdl:message>
+  <wsdl:message name="boletoRegistradoBBGuiaComplementar">
+    <wsdl:part name="parameters" element="tns:boletoRegistradoBBGuiaComplementar" />
+  </wsdl:message>
+  <wsdl:message name="buscarGuiasPorTransacaoResponse">
+    <wsdl:part name="parameters" element="tns:buscarGuiasPorTransacaoResponse" />
+  </wsdl:message>
+  <wsdl:message name="boletoRegistradoBBEmbarcacoesResponse">
+    <wsdl:part name="parameters" element="tns:boletoRegistradoBBEmbarcacoesResponse" />
+  </wsdl:message>
+  <wsdl:message name="boletoRegistradoBBGuiaModalidade">
+    <wsdl:part name="parameters" element="tns:boletoRegistradoBBGuiaModalidade" />
+  </wsdl:message>
+  <wsdl:message name="boletoRegistradoBBGuiaMultipla">
+    <wsdl:part name="parameters" element="tns:boletoRegistradoBBGuiaMultipla" />
+  </wsdl:message>
+  <wsdl:message name="boletoAvulsoRegistradoBB">
+    <wsdl:part name="parameters" element="tns:boletoAvulsoRegistradoBB" />
+  </wsdl:message>
+  <wsdl:message name="buscarTaxa">
+    <wsdl:part name="parameters" element="tns:buscarTaxa" />
+  </wsdl:message>
+  <wsdl:message name="gerarGuiaEmbarcacoesResponse">
+    <wsdl:part name="parameters" element="tns:gerarGuiaEmbarcacoesResponse" />
+  </wsdl:message>
+  <wsdl:message name="gerarGuiaSisparPF">
+    <wsdl:part name="parameters" element="tns:gerarGuiaSisparPF" />
+  </wsdl:message>
+  <wsdl:message name="gerarGuia">
+    <wsdl:part name="parameters" element="tns:gerarGuia" />
+  </wsdl:message>
+  <wsdl:message name="boletoRegistradoBBGuiaMultiplaResponse">
+    <wsdl:part name="parameters" element="tns:boletoRegistradoBBGuiaMultiplaResponse" />
+  </wsdl:message>
+  <wsdl:message name="gerarGuiaModalidade">
+    <wsdl:part name="parameters" element="tns:gerarGuiaModalidade" />
+  </wsdl:message>
+  <wsdl:message name="gerarGuiaSisparPFResponse">
+    <wsdl:part name="parameters" element="tns:gerarGuiaSisparPFResponse" />
+  </wsdl:message>
+  <wsdl:message name="gerarGuiaModalidadeResponse">
+    <wsdl:part name="parameters" element="tns:gerarGuiaModalidadeResponse" />
+  </wsdl:message>
+  <wsdl:message name="buscarTaxaEmbarcacao">
+    <wsdl:part name="parameters" element="tns:buscarTaxaEmbarcacao" />
+  </wsdl:message>
+  <wsdl:message name="gerarGuiaEmbarcacoes">
+    <wsdl:part name="parameters" element="tns:gerarGuiaEmbarcacoes" />
+  </wsdl:message>
+  <wsdl:message name="buscarTaxaResponse">
+    <wsdl:part name="parameters" element="tns:buscarTaxaResponse" />
+  </wsdl:message>
+  <wsdl:message name="boletoRegistradoBBResponse">
+    <wsdl:part name="parameters" element="tns:boletoRegistradoBBResponse" />
+  </wsdl:message>
+  <wsdl:message name="gerarGuiaComplementarResponse">
+    <wsdl:part name="parameters" element="tns:gerarGuiaComplementarResponse" />
+  </wsdl:message>
+  <wsdl:message name="gerarGuiaMultipla">
+    <wsdl:part name="parameters" element="tns:gerarGuiaMultipla" />
+  </wsdl:message>
+  <wsdl:message name="gerarGuiaSisparPJ">
+    <wsdl:part name="parameters" element="tns:gerarGuiaSisparPJ" />
+  </wsdl:message>
+  <wsdl:message name="gerarGuiaResponse">
+    <wsdl:part name="parameters" element="tns:gerarGuiaResponse" />
+  </wsdl:message>
+  <wsdl:message name="gerarGuiaMultiplaResponse">
+    <wsdl:part name="parameters" element="tns:gerarGuiaMultiplaResponse" />
+  </wsdl:message>
+  <wsdl:message name="WebServiceException">
+    <wsdl:part name="WebServiceException" element="tns:ServiceException" />
+  </wsdl:message>
+  <wsdl:message name="boletoRegistradoBBGuiaComplementarResponse">
+    <wsdl:part name="parameters" element="tns:boletoRegistradoBBGuiaComplementarResponse" />
+  </wsdl:message>
+  <wsdl:message name="boletoRegistradoBBEmbarcacoes">
+    <wsdl:part name="parameters" element="tns:boletoRegistradoBBEmbarcacoes" />
+  </wsdl:message>
+  <wsdl:message name="boletoRegistradoBB">
+    <wsdl:part name="parameters" element="tns:boletoRegistradoBB" />
+  </wsdl:message>
+  <wsdl:message name="boletoAvulsoRegistradoBBResponse">
+    <wsdl:part name="parameters" element="tns:boletoAvulsoRegistradoBBResponse" />
+  </wsdl:message>
+  <wsdl:portType name="GuiaWebService">
+    <wsdl:operation name="gerarGuiaSisparPF">
+      <wsdl:input name="gerarGuiaSisparPF" message="tns:gerarGuiaSisparPF" />
+      <wsdl:output name="gerarGuiaSisparPFResponse" message="tns:gerarGuiaSisparPFResponse" />
+      <wsdl:fault name="WebServiceException" message="tns:WebServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="gerarGuia">
+      <wsdl:input name="gerarGuia" message="tns:gerarGuia" />
+      <wsdl:output name="gerarGuiaResponse" message="tns:gerarGuiaResponse" />
+      <wsdl:fault name="WebServiceException" message="tns:WebServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="gerarGuiaComplementar">
+      <wsdl:input name="gerarGuiaComplementar" message="tns:gerarGuiaComplementar" />
+      <wsdl:output name="gerarGuiaComplementarResponse" message="tns:gerarGuiaComplementarResponse" />
+      <wsdl:fault name="WebServiceException" message="tns:WebServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="gerarGuiaModalidade">
+      <wsdl:input name="gerarGuiaModalidade" message="tns:gerarGuiaModalidade" />
+      <wsdl:output name="gerarGuiaModalidadeResponse" message="tns:gerarGuiaModalidadeResponse" />
+      <wsdl:fault name="WebServiceException" message="tns:WebServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="buscarGuiasPorTransacao">
+      <wsdl:input name="buscarGuiasPorTransacao" message="tns:buscarGuiasPorTransacao" />
+      <wsdl:output name="buscarGuiasPorTransacaoResponse" message="tns:buscarGuiasPorTransacaoResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="boletoRegistradoBBGuiaComplementar">
+      <wsdl:input name="boletoRegistradoBBGuiaComplementar" message="tns:boletoRegistradoBBGuiaComplementar" />
+      <wsdl:output name="boletoRegistradoBBGuiaComplementarResponse" message="tns:boletoRegistradoBBGuiaComplementarResponse" />
+      <wsdl:fault name="WebServiceException" message="tns:WebServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="buscarTaxaEmbarcacao">
+      <wsdl:input name="buscarTaxaEmbarcacao" message="tns:buscarTaxaEmbarcacao" />
+      <wsdl:output name="buscarTaxaEmbarcacaoResponse" message="tns:buscarTaxaEmbarcacaoResponse" />
+      <wsdl:fault name="WebServiceException" message="tns:WebServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="gerarGuiaEmbarcacoes">
+      <wsdl:input name="gerarGuiaEmbarcacoes" message="tns:gerarGuiaEmbarcacoes" />
+      <wsdl:output name="gerarGuiaEmbarcacoesResponse" message="tns:gerarGuiaEmbarcacoesResponse" />
+      <wsdl:fault name="WebServiceException" message="tns:WebServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="gerarGuiaMultipla">
+      <wsdl:input name="gerarGuiaMultipla" message="tns:gerarGuiaMultipla" />
+      <wsdl:output name="gerarGuiaMultiplaResponse" message="tns:gerarGuiaMultiplaResponse" />
+      <wsdl:fault name="WebServiceException" message="tns:WebServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="gerarGuiaSisparPJ">
+      <wsdl:input name="gerarGuiaSisparPJ" message="tns:gerarGuiaSisparPJ" />
+      <wsdl:output name="gerarGuiaSisparPJResponse" message="tns:gerarGuiaSisparPJResponse" />
+      <wsdl:fault name="WebServiceException" message="tns:WebServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="boletoRegistradoBBGuiaModalidade">
+      <wsdl:input name="boletoRegistradoBBGuiaModalidade" message="tns:boletoRegistradoBBGuiaModalidade" />
+      <wsdl:output name="boletoRegistradoBBGuiaModalidadeResponse" message="tns:boletoRegistradoBBGuiaModalidadeResponse" />
+      <wsdl:fault name="WebServiceException" message="tns:WebServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="boletoRegistradoBBGuiaMultipla">
+      <wsdl:input name="boletoRegistradoBBGuiaMultipla" message="tns:boletoRegistradoBBGuiaMultipla" />
+      <wsdl:output name="boletoRegistradoBBGuiaMultiplaResponse" message="tns:boletoRegistradoBBGuiaMultiplaResponse" />
+      <wsdl:fault name="WebServiceException" message="tns:WebServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="boletoAvulsoRegistradoBB">
+      <wsdl:input name="boletoAvulsoRegistradoBB" message="tns:boletoAvulsoRegistradoBB" />
+      <wsdl:output name="boletoAvulsoRegistradoBBResponse" message="tns:boletoAvulsoRegistradoBBResponse" />
+      <wsdl:fault name="WebServiceException" message="tns:WebServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="boletoRegistradoBBEmbarcacoes">
+      <wsdl:input name="boletoRegistradoBBEmbarcacoes" message="tns:boletoRegistradoBBEmbarcacoes" />
+      <wsdl:output name="boletoRegistradoBBEmbarcacoesResponse" message="tns:boletoRegistradoBBEmbarcacoesResponse" />
+      <wsdl:fault name="WebServiceException" message="tns:WebServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="boletoRegistradoBB">
+      <wsdl:input name="boletoRegistradoBB" message="tns:boletoRegistradoBB" />
+      <wsdl:output name="boletoRegistradoBBResponse" message="tns:boletoRegistradoBBResponse" />
+      <wsdl:fault name="WebServiceException" message="tns:WebServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="buscarTaxa">
+      <wsdl:input name="buscarTaxa" message="tns:buscarTaxa" />
+      <wsdl:output name="buscarTaxaResponse" message="tns:buscarTaxaResponse" />
+      <wsdl:fault name="WebServiceException" message="tns:WebServiceException" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="GuiaServiceSoapBinding" type="tns:GuiaWebService">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="gerarGuiaSisparPF">
+      <soap:operation soapAction="gerarGuiaSisparPF" style="document" />
+      <wsdl:input name="gerarGuiaSisparPF">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="gerarGuiaSisparPFResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="WebServiceException">
+        <soap:fault use="literal" name="WebServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="gerarGuia">
+      <soap:operation soapAction="gerarGuia" style="document" />
+      <wsdl:input name="gerarGuia">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="gerarGuiaResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="WebServiceException">
+        <soap:fault use="literal" name="WebServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="gerarGuiaComplementar">
+      <soap:operation soapAction="gerarGuiaComplementar" style="document" />
+      <wsdl:input name="gerarGuiaComplementar">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="gerarGuiaComplementarResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="WebServiceException">
+        <soap:fault use="literal" name="WebServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="gerarGuiaModalidade">
+      <soap:operation soapAction="gerarGuiaModalidade" style="document" />
+      <wsdl:input name="gerarGuiaModalidade">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="gerarGuiaModalidadeResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="WebServiceException">
+        <soap:fault use="literal" name="WebServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="buscarGuiasPorTransacao">
+      <soap:operation soapAction="buscarGuiasPorTransacao" style="document" />
+      <wsdl:input name="buscarGuiasPorTransacao">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="buscarGuiasPorTransacaoResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="boletoRegistradoBBGuiaComplementar">
+      <soap:operation soapAction="boletoRegistradoBBGuiaComplementar" style="document" />
+      <wsdl:input name="boletoRegistradoBBGuiaComplementar">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="boletoRegistradoBBGuiaComplementarResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="WebServiceException">
+        <soap:fault use="literal" name="WebServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="buscarTaxaEmbarcacao">
+      <soap:operation soapAction="buscarTaxaEmbarcacao" style="document" />
+      <wsdl:input name="buscarTaxaEmbarcacao">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="buscarTaxaEmbarcacaoResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="WebServiceException">
+        <soap:fault use="literal" name="WebServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="gerarGuiaEmbarcacoes">
+      <soap:operation soapAction="gerarGuiaEmbarcacoes" style="document" />
+      <wsdl:input name="gerarGuiaEmbarcacoes">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="gerarGuiaEmbarcacoesResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="WebServiceException">
+        <soap:fault use="literal" name="WebServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="gerarGuiaMultipla">
+      <soap:operation soapAction="gerarGuiaMultipla" style="document" />
+      <wsdl:input name="gerarGuiaMultipla">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="gerarGuiaMultiplaResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="WebServiceException">
+        <soap:fault use="literal" name="WebServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="gerarGuiaSisparPJ">
+      <soap:operation soapAction="gerarGuiaSisparPJ" style="document" />
+      <wsdl:input name="gerarGuiaSisparPJ">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="gerarGuiaSisparPJResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="WebServiceException">
+        <soap:fault use="literal" name="WebServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="boletoRegistradoBBGuiaModalidade">
+      <soap:operation soapAction="boletoRegistradoBBGuiaModalidade" style="document" />
+      <wsdl:input name="boletoRegistradoBBGuiaModalidade">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="boletoRegistradoBBGuiaModalidadeResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="WebServiceException">
+        <soap:fault use="literal" name="WebServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="boletoRegistradoBBGuiaMultipla">
+      <soap:operation soapAction="boletoRegistradoBBGuiaMultipla" style="document" />
+      <wsdl:input name="boletoRegistradoBBGuiaMultipla">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="boletoRegistradoBBGuiaMultiplaResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="WebServiceException">
+        <soap:fault use="literal" name="WebServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="boletoAvulsoRegistradoBB">
+      <soap:operation soapAction="boletoAvulsoRegistradoBB" style="document" />
+      <wsdl:input name="boletoAvulsoRegistradoBB">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="boletoAvulsoRegistradoBBResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="WebServiceException">
+        <soap:fault use="literal" name="WebServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="boletoRegistradoBBEmbarcacoes">
+      <soap:operation soapAction="boletoRegistradoBBEmbarcacoes" style="document" />
+      <wsdl:input name="boletoRegistradoBBEmbarcacoes">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="boletoRegistradoBBEmbarcacoesResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="WebServiceException">
+        <soap:fault use="literal" name="WebServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="boletoRegistradoBB">
+      <soap:operation soapAction="boletoRegistradoBB" style="document" />
+      <wsdl:input name="boletoRegistradoBB">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="boletoRegistradoBBResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="WebServiceException">
+        <soap:fault use="literal" name="WebServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="buscarTaxa">
+      <soap:operation soapAction="buscarTaxa" style="document" />
+      <wsdl:input name="buscarTaxa">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="buscarTaxaResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="WebServiceException">
+        <soap:fault use="literal" name="WebServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="GuiaService">
+    <wsdl:port name="GuiaServicePort" binding="tns:GuiaServiceSoapBinding">
+      <soap:address location="http://unigru.anvisa.gov.br:8080/unigru/webservice/guia" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

@@ -657,6 +657,72 @@
     <EmbeddedResource Include="BoletoNetCore\Imagens\BoletoBancario.bmp" />
     <EmbeddedResource Include="BoletoNetCore\Imagens\corte.gif" />
     <EmbeddedResource Include="BoletoNetCore\Imagens\ponto.gif" />
+    <Content Include="Connected Services\serviceRegistroBoletoProducao\CodivaServiceWS.serviceRegistroBoletoProducao.boletoAvulsoRegistradoBBResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Connected Services\serviceRegistroBoletoProducao\CodivaServiceWS.serviceRegistroBoletoProducao.boletoRegistradoBBEmbarcacoesResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Connected Services\serviceRegistroBoletoProducao\CodivaServiceWS.serviceRegistroBoletoProducao.boletoRegistradoBBGuiaComplementarResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Connected Services\serviceRegistroBoletoProducao\CodivaServiceWS.serviceRegistroBoletoProducao.boletoRegistradoBBGuiaModalidadeResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Connected Services\serviceRegistroBoletoProducao\CodivaServiceWS.serviceRegistroBoletoProducao.boletoRegistradoBBGuiaMultiplaResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Connected Services\serviceRegistroBoletoProducao\CodivaServiceWS.serviceRegistroBoletoProducao.boletoRegistradoBBResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Connected Services\serviceRegistroBoletoProducao\CodivaServiceWS.serviceRegistroBoletoProducao.buscarGuiasPorTransacaoResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Connected Services\serviceRegistroBoletoProducao\CodivaServiceWS.serviceRegistroBoletoProducao.buscarTaxaEmbarcacaoResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Connected Services\serviceRegistroBoletoProducao\CodivaServiceWS.serviceRegistroBoletoProducao.buscarTaxaResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Connected Services\serviceRegistroBoletoProducao\CodivaServiceWS.serviceRegistroBoletoProducao.gerarGuiaComplementarResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Connected Services\serviceRegistroBoletoProducao\CodivaServiceWS.serviceRegistroBoletoProducao.gerarGuiaEmbarcacoesResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Connected Services\serviceRegistroBoletoProducao\CodivaServiceWS.serviceRegistroBoletoProducao.gerarGuiaModalidadeResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Connected Services\serviceRegistroBoletoProducao\CodivaServiceWS.serviceRegistroBoletoProducao.gerarGuiaMultiplaResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Connected Services\serviceRegistroBoletoProducao\CodivaServiceWS.serviceRegistroBoletoProducao.gerarGuiaResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Connected Services\serviceRegistroBoletoProducao\CodivaServiceWS.serviceRegistroBoletoProducao.gerarGuiaSisparPFResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Connected Services\serviceRegistroBoletoProducao\CodivaServiceWS.serviceRegistroBoletoProducao.gerarGuiaSisparPJResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Connected Services\serviceRegistroBoletoProducao\CodivaServiceWS.serviceRegistroBoletoProducao.Guia.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Connected Services\serviceRegistroBoletoProducao\CodivaServiceWS.serviceRegistroBoletoProducao.guiaDTO.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Connected Services\serviceRegistroBoletoProducao\CodivaServiceWS.serviceRegistroBoletoProducao.respostaBoletoRegistrado.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Connected Services\serviceRegistroBoletoProducao\CodivaServiceWS.serviceRegistroBoletoProducao.Taxa.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <None Include="Connected Services\serviceRegistroBoletoProducao\configuration91.svcinfo" />
+    <None Include="Connected Services\serviceRegistroBoletoProducao\configuration.svcinfo" />
+    <None Include="Connected Services\serviceRegistroBoletoProducao\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
     <Content Include="Connected Services\serviceRegistroBoleto\CodivaServiceWS.serviceRegistroBoleto.boletoAvulsoRegistradoBBResponse.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Content>
@@ -728,6 +794,7 @@
     <Content Include="BoletoNetCore\obj\project.assets.json" />
     <Content Include="BoletoNetCore\obj\project.nuget.cache" />
     <Content Include="BoletoNetCore\Properties\launchSettings.json" />
+    <None Include="Connected Services\serviceRegistroBoletoProducao\GuiaService.wsdl" />
     <None Include="Connected Services\serviceRegistroBoleto\configuration91.svcinfo" />
     <None Include="Connected Services\serviceRegistroBoleto\configuration.svcinfo" />
     <None Include="Connected Services\serviceRegistroBoleto\GuiaService1.wsdl" />
@@ -858,6 +925,11 @@
     <Compile Include="BoletoNetCore\Util\TTipoRegistroEDI.cs" />
     <Compile Include="BoletoNetCore\Util\TTiposDadoEDI.cs" />
     <Compile Include="BoletoNetCore\Util\Utils.cs" />
+    <Compile Include="Connected Services\serviceRegistroBoletoProducao\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
     <Compile Include="Connected Services\serviceRegistroBoleto\Reference.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -907,6 +979,7 @@
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <ItemGroup>
+    <WCFMetadataStorage Include="Connected Services\serviceRegistroBoletoProducao\" />
     <WCFMetadataStorage Include="Connected Services\serviceRegistroBoleto\" />
   </ItemGroup>
   <ItemGroup>

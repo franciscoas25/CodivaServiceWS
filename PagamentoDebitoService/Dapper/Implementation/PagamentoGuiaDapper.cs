@@ -32,7 +32,8 @@ namespace PagamentoDebitoService.Dapper.Implementation
                                                                        AND    PARC.CO_PAGAMENTO = PAG.NU_SEQ_PAGAMENTO
                                                                        AND    PARC.CO_DEBITO = DEB.CO_SEQ_DEBITO
                                                                        AND    PARC.CO_PAGAMENTO IS NOT NULL
-                                                                       AND    ROWNUM < 10
+                                                                       AND    DEB.ST_DEBITO_EXIGIVEL = 'N'
+                                                                       --AND    ROWNUM < 10
                                                                        --AND  to_date(G.DT_PAGAMENTO, 'dd/mm/yyyy') = to_date(sysdate - 1, 'dd/mm/yyyy')
                                                                        --AND    PARC.CO_DEBITO IN (33284, 32780)");
 

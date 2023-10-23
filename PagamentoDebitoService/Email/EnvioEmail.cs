@@ -51,11 +51,9 @@ namespace PagamentoDebitoService.Email
 
                 var smtpClient = new SmtpClient(host, port);                
                 smtpClient.Timeout = 10000;
-
                 smtpClient.EnableSsl = true;
-                //smtpClient.UseDefaultCredentials = false;
-                smtpClient.Credentials = new NetworkCredential("franciscoas25@gmail.com", "ycfq ztwk gmyi vwst");
-                //smtpClient.Credentials = new NetworkCredential("rni@anvisa.gov.br", "");
+                //smtpClient.Credentials = new NetworkCredential("franciscoas25@gmail.com", "ycfq ztwk gmyi vwst");
+                smtpClient.Credentials = new NetworkCredential("rni@anvisa.gov.br", "");
 
                 mailMessage.From = new MailAddress(remetente, nomeEmail);
                 mailMessage.Body = sb.ToString();

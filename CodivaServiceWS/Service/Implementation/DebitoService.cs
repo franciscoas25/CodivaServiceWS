@@ -116,9 +116,12 @@ namespace CodivaServiceWS.Service.Implementation
                     return (false, urlBoleto, nossoNumero);
 
                 string instrucoes = $"Cota Única[br][br]Não receber após o vencimento.[br][br]Código do Débito: {codigoDebito} [br]Processo nº: {dadosDebito.NumProcesso} [br][br]Dúvidas: Central de Atendimento: 0800 642 9782";
-                
+
                 serviceRegistroBoleto.requisicaoBoletoRegistradoAvulso parametrosRequisicao = new serviceRegistroBoleto.requisicaoBoletoRegistradoAvulso();
                 serviceRegistroBoleto.GuiaWebServiceClient guiaWS = new serviceRegistroBoleto.GuiaWebServiceClient();
+
+                //serviceRegistroBoletoProducao.requisicaoBoletoRegistradoAvulso parametrosRequisicaoProducao = new serviceRegistroBoletoProducao.requisicaoBoletoRegistradoAvulso();
+                //serviceRegistroBoletoProducao.GuiaWebServiceClient guiaWSProducao = new serviceRegistroBoletoProducao.GuiaWebServiceClient();
 
                 var valorDesconto = float.Parse(valorMulta) * (0.2);
 
@@ -154,8 +157,10 @@ namespace CodivaServiceWS.Service.Implementation
                 parametrosRequisicao.dataDescontoTitulo = CalculaDataLimitePagamentoDesconto().ToShortDateString().Replace("/", ".");
 
                 nossoNumero = parametrosRequisicao.textoNumeroTituloCliente;
+                //nossoNumero = parametrosRequisicaoProducao.textoNumeroTituloCliente;
 
                 var retorno = guiaWS.boletoAvulsoRegistradoBB(parametrosRequisicao);
+                //var retorno = guiaWSProducao.boletoAvulsoRegistradoBB(parametrosRequisicaoProducao);
 
                 if (retorno != null && retorno.guiaArrecad != null)
                 {               
@@ -226,9 +231,11 @@ namespace CodivaServiceWS.Service.Implementation
                         EspecieDocumento = TipoEspecieDocumento.DS,
                         Pagador = sacado,
                         Carteira = "17",
-                        CodigoInstrucao1 = "Desconto de 20% se pago até 20 dias a contar da data de recebimento desta notificação, nos termos do art. 21 da Lei n. 6.437/77",
                         DataDesconto = CalculaDataLimitePagamentoDesconto(),
-                        ValorDesconto = Convert.ToDecimal(valorDesconto)
+                        ValorDesconto = Convert.ToDecimal(valorDesconto),
+                        ImprimirMensagemInstrucao = true,
+                        MensagemInstrucoesCaixaFormatado = "Desconto de 20% se pago até 20 dias a contar da data de recebimento desta notificação, nos termos do art. 21 da Lei n. 6.437/77",
+                        MensagemInstrucoesCaixa = "Desconto de 20% se pago até 20 dias a contar da data de recebimento desta notificação, nos termos do art. 21 da Lei n. 6.437/77"
                     };
 
                     var boleto_bancario = new BoletoBancario()
@@ -236,7 +243,7 @@ namespace CodivaServiceWS.Service.Implementation
                         Boleto = boleto,
                         MostrarCodigoCarteira = false,
                         MostrarComprovanteEntrega = false,
-                        OcultarReciboPagador = true
+                        OcultarReciboPagador = true                        
                     };
 
                     boleto_bancario.Boleto.ValidarDados();
