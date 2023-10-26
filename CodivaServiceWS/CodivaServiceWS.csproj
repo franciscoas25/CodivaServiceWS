@@ -657,6 +657,7 @@
     <EmbeddedResource Include="BoletoNetCore\Imagens\BoletoBancario.bmp" />
     <EmbeddedResource Include="BoletoNetCore\Imagens\corte.gif" />
     <EmbeddedResource Include="BoletoNetCore\Imagens\ponto.gif" />
+    <Content Include="BoletoNetCore\Imagens\logo_anvisa.jpg" />
     <Content Include="Connected Services\serviceRegistroBoletoProducao\CodivaServiceWS.serviceRegistroBoletoProducao.boletoAvulsoRegistradoBBResponse.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Content>

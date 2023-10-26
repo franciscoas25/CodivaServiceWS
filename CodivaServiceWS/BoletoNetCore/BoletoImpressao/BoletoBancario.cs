@@ -125,7 +125,11 @@ namespace BoletoNetCore
             {
                 var html = new StringBuilder();
 
-                var titulo = "<img src='../Imagens/BoletoBancario.bmp'/>";
+                //var titulo = "<img src='../Imagens/BoletoBancario.bmp'/>";
+
+                var bytesLogoAnvisa = File.ReadAllBytes(System.Web.HttpContext.Current.Server.MapPath("./BoletoNetCore/Imagens/logo_anvisa.jpg"));
+                var strLogoAnvisa = string.Format("data:image/png;base64,{0}", Convert.ToBase64String(bytesLogoAnvisa));
+
                 var instrucaoHeader = $"NOTIFICAÇÃO ADMINISTRATIVA&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspDébito nº {codigoDebito}&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspEm {DateTime.Now.ToShortDateString()}, Brasilia-DF<br/><br/>";
                 var instrucoes = "Processo Administrativo Sancionador (PAS) nº: 1250<br/>Autuado: clinkids servicos medicos ltda - CNPJ: 11111111000191<br/><br/>Prezado (a) Senhor (a),<br/><br/>Informamos que o processo em referência foi julgado pela Coordenação de Atuação Administrativa e Julgamento das Infrações Sanitárias (CAJIS)\r\nconforme decisão n. 28900 disponível no Sistema Eletrônico de Informações (SEI). Para maiores informações acesse o Manual do Usuário Externo\r\nSei-Anvisa, que está disponível em https://www.gov.br/anvisa/pt-br/sistemas/sei.<br/>Havendo interesse no pedido de cópia ou na interposição de recurso administrativo, estes deverão ser protocolados exclusivamente pelo Sistema\r\nEletrônico de Informações (SEI).<br/>O prazo para interposição de recurso é de 20 dias contados do recebimento desta notificação, conforme disposto no art. 9º da RDC nº 266/2019.\r\nAlertamos que o recurso, procurações e substabelecimentos apresentados deverão ser assinados eletronicamente com certificação digital no\r\npadrão da Infraestrutura de Chaves Públicas Brasileira (ICP-Brasil) ou pelo assinador Gov.Br.<br/>O valor da multa poderá ser pago com 20% de desconto caso seja efetuado em até 20 dias contados de seu recebimento. Contudo, o seu\r\npagamento com desconto implica em desistência tácita do recurso, conforme art. 21 da Lei nº 6.437/1977.<br/>A segunda via de boleto, ou boleto atualizado, pode ser obtida ao acessar o link http://www.anvisa.gov.br/sispar/Index.asp, informando o n. CNPJ,\r\no n. débito e marcando \"cota única\".<br/>Esclarecemos que o valor da multa foi atualizado pela taxa selic acumulada nos termos do art. 37-A da Lei nº 10.522/2002 e no art. 5º do Decreto\u0002Lei nº 1.736/79.<br/>Por fim, demais informações devem ser solicitados exclusivamente pelos Canais de Atendimento da Anvisa (https://www.gov.br/anvisa/pt\u0002br/canais_atendimento) ou pelo Serviço de Atendimento ao Cidadão (https://www.gov.br/anvisa/pt-br/acessoainformacao/sic).<br/><br/><br/><br/>";
                 var assinatura = "PATRICIA CRISTINA ANTUNES SEBASTIÃO<br/>Coordenação de Atuação Administrativa e Julgamento das Infrações Sanitárias";
@@ -135,7 +139,8 @@ namespace BoletoNetCore
                 html.Append("<br />");
 
                 return html.ToString()
-                    .Replace("@TITULO", titulo)
+                    //.Replace("@TITULO", strLogoAnvisa)
+                    .Replace("@LOGOANVISA", strLogoAnvisa)
                     .Replace("@INSTRUCAOHEADER", instrucaoHeader)
                     .Replace("@INSTRUCAO", instrucoes)
                     .Replace("@ASSINATURA", assinatura);

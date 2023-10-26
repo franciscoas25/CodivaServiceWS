@@ -6,6 +6,7 @@ using Ninject.Web;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Data.Entity.Core.Mapping;
 using System.Data.SqlTypes;
 using System.IO;
@@ -152,12 +153,13 @@ namespace CodivaServiceWS
             bool elementIsEmpty = false;
             bool excluirTagElement = false;
 
+            var urlWSDL = ConfigurationManager.AppSettings["UrlWSDL"];
+
             StringBuilder sb = new StringBuilder();
 
             WebClient client = new WebClient();
 
-            //var wsdlOriginal = client.DownloadString("http://10.103.0.41:8083/WSCodivaService.asmx?wsdl");
-            var wsdlOriginal = client.DownloadString("https://localhost:44345/WSCodivaService.asmx?wsdl");
+            var wsdlOriginal = client.DownloadString(urlWSDL);
 
             byte[] byteArray = Encoding.UTF8.GetBytes(wsdlOriginal);
 
