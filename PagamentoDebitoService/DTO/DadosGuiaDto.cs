@@ -14,5 +14,6 @@ namespace PagamentoDebitoService.DTO
         public DateTime DataPagamento { get; set; }
         public DateTime DataVencimento { get; set; }
         public decimal ValorPago { get; set; }
+        public decimal ValorTotalGuia { get; set; }
     }
 }

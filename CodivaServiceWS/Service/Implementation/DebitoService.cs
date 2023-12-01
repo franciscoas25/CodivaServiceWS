@@ -27,8 +27,8 @@ namespace CodivaServiceWS.Service.Implementation
     public class DebitoService : IDebitoService
     {
         [Inject]
-        public IBanco _banco; 
-        
+        public IBanco _banco;
+
         [Inject]
         public IDebitoDapper _debitoDapper { get; set; }
 
@@ -38,7 +38,7 @@ namespace CodivaServiceWS.Service.Implementation
         public bool IncluirDebito(string cpf_cnpj, string tipoDebito, string numDocumento, string anoDocumento, string numProcesso, string gerencia, string nomePessoa, string receita, int unidadeArrecadadora, string dataMulta, string valorMulta)
         {
             var dataVencimentoDebito = CalculaDataVencimentoTitulo().ToString();
-            
+
             var codigoPessoaDevedora = _baseDapper.ObterCodigoPessoaDevedoraPorCpfCnpj(cpf_cnpj);
 
             var codTipoDebito = tipoDebito.ToLower() == TipoDebito.AutoInfracao.GetType().GetMember(TipoDebito.AutoInfracao.ToString()).First().GetCustomAttribute<DescriptionAttribute>().Description.ToLower() ? 1 : 14;
@@ -101,10 +101,12 @@ namespace CodivaServiceWS.Service.Implementation
             return _debitoDapper.CalculaNossoNumero(uf, receita, tipoNossoNumero);
         }
 
-        public (bool sucesso, string urlBoleto, string nossoNumero) GerarNotificacaoDebito(int codigoDebito, string valorMulta, string dataVencimento, string percentualSelic, string percentualMulta, string valorSelic, string valorMultaSelic)
+        public (bool sucesso, string urlBoleto, string nossoNumero, double codigoBoletoRegistrado, int numeroGuia) GerarNotificacaoDebito(int codigoDebito, string valorMulta, string dataVencimento, string percentualSelic, string percentualMulta, string valorSelic, string valorMultaSelic)
         {
             string urlBoleto = string.Empty;
             string nossoNumero = string.Empty;
+            double codigoBoletoRegistrado = 0;
+            int numeroGuia = 0;
 
             try
             {
@@ -113,15 +115,15 @@ namespace CodivaServiceWS.Service.Implementation
                 var dadosDebito = _debitoDapper.ObterDadosDebito(codigoDebito);
 
                 if (dadosDebito == null)
-                    return (false, urlBoleto, nossoNumero);
+                    return (false, urlBoleto, nossoNumero, codigoBoletoRegistrado, numeroGuia);
 
                 string instrucoes = $"Cota Única[br][br]Não receber após o vencimento.[br][br]Código do Débito: {codigoDebito} [br]Processo nº: {dadosDebito.NumProcesso} [br][br]Dúvidas: Central de Atendimento: 0800 642 9782";
 
                 serviceRegistroBoleto.requisicaoBoletoRegistradoAvulso parametrosRequisicao = new serviceRegistroBoleto.requisicaoBoletoRegistradoAvulso();
                 serviceRegistroBoleto.GuiaWebServiceClient guiaWS = new serviceRegistroBoleto.GuiaWebServiceClient();
 
-                //serviceRegistroBoletoProducao.requisicaoBoletoRegistradoAvulso parametrosRequisicaoProducao = new serviceRegistroBoletoProducao.requisicaoBoletoRegistradoAvulso();
-                //serviceRegistroBoletoProducao.GuiaWebServiceClient guiaWSProducao = new serviceRegistroBoletoProducao.GuiaWebServiceClient();
+                //serviceRegistroBoletoProducao.requisicaoBoletoRegistradoAvulso parametrosRequisicao = new serviceRegistroBoletoProducao.requisicaoBoletoRegistradoAvulso();
+                //serviceRegistroBoletoProducao.GuiaWebServiceClient guiaWS = new serviceRegistroBoletoProducao.GuiaWebServiceClient();
 
                 var valorDesconto = float.Parse(valorMulta) * (0.2);
 
@@ -140,7 +142,6 @@ namespace CodivaServiceWS.Service.Implementation
                 parametrosRequisicao.codigoTipoTitulo = "4";
                 parametrosRequisicao.codigoTipoContaCaucao = "0";
                 parametrosRequisicao.textoNumeroTituloBeneficiario = "0";
-                //parametrosRequisicao.textoNumeroTituloCliente = nossoNumero;
                 parametrosRequisicao.textoNumeroTituloCliente = parametrosRequisicao.numeroConvenio + codigoDebito.ToString().PadLeft(8, '0') + DateTime.Now.ToString("yy");
                 parametrosRequisicao.textoMensagemBloquetoOcorrencia = instrucoes;
                 parametrosRequisicao.codigoTipoInscricaoPagador = "2";
@@ -156,144 +157,99 @@ namespace CodivaServiceWS.Service.Implementation
                 parametrosRequisicao.valorDescontoTitulo = valorDesconto.ToString();
                 parametrosRequisicao.dataDescontoTitulo = CalculaDataLimitePagamentoDesconto().ToShortDateString().Replace("/", ".");
 
-                nossoNumero = parametrosRequisicao.textoNumeroTituloCliente;
-                //nossoNumero = parametrosRequisicaoProducao.textoNumeroTituloCliente;
-
                 var retorno = guiaWS.boletoAvulsoRegistradoBB(parametrosRequisicao);
-                //var retorno = guiaWSProducao.boletoAvulsoRegistradoBB(parametrosRequisicaoProducao);
 
-                if (retorno != null && retorno.guiaArrecad != null)
-                {               
-                    var contaBancaria = new ContaBancaria()
+                if (retorno == null || retorno.guiaArrecad == null)
+                    return (false, urlBoleto, nossoNumero, codigoBoletoRegistrado, numeroGuia);
+
+                string ano = retorno.guiaArrecad.numero.ToString().Length > 6 ? DateTime.Now.ToString("yyyy").Substring(0, 3) : DateTime.Now.ToString("yyyy");
+
+                nossoNumero = parametrosRequisicao.numeroConvenio + retorno.guiaArrecad.numero.ToString() + ano;
+
+                var contaBancaria = new ContaBancaria()
+                {
+                    Agencia = "3477",
+                    DigitoAgencia = "0",
+                    Conta = "00333001",
+                    DigitoConta = "X",
+                    OperacaoConta = "019",
+                    CarteiraPadrao = "17",
+                    VariacaoCarteiraPadrao = "019"
+                };
+
+                var cedente = new Beneficiario()
+                {
+                    Codigo = parametrosRequisicao.numeroConvenio,
+                    CPFCNPJ = "03112386000111",
+                    Nome = "AGÊNCIA NACIONAL DE VIGILÂNCIA SANITÁRIA - ANVISA",
+                    ContaBancaria = contaBancaria
+                };
+
+                var sacado = new Pagador()
+                {
+                    CPFCNPJ = parametrosRequisicao.numeroInscricaoPagador,
+                    Nome = parametrosRequisicao.nomePagador,
+                    Endereco = new Endereco()
                     {
-                        Agencia = "3477",
-                        DigitoAgencia = "0",
-                        Conta = "00333001",
-                        DigitoConta = "X",
-                        OperacaoConta = "019",
-                        CarteiraPadrao = "17",
-                        VariacaoCarteiraPadrao = "019"
-                    };
-
-                    var cedente = new Beneficiario()
-                    {
-                        Codigo = parametrosRequisicao.numeroConvenio, //ced.ID.ToString().PadLeft(7, '0'),
-                        //Convenio = Convert.ToInt64(parametrosRequisicao.numeroConvenio),
-                        CPFCNPJ = "03112386000111",
-                        Nome = "AGÊNCIA NACIONAL DE VIGILÂNCIA SANITÁRIA - ANVISA",
-                        ContaBancaria = contaBancaria
-                    };
-
-                    var sacado = new Pagador()
-                    {
-                        CPFCNPJ = parametrosRequisicao.numeroInscricaoPagador,
-                        Nome = parametrosRequisicao.nomePagador,
-                        Endereco = new Endereco()
-                        {
-                            LogradouroEndereco = dadosDebito.Endereco,
-                            Bairro = dadosDebito.Bairro,
-                            Cidade = dadosDebito.Cidade,
-                            UF = dadosDebito.UF,
-                            CEP = dadosDebito.Cep
-                        }
-                    };
-
-                    _banco = Banco.Instancia(Bancos.BancoDoBrasil);
-                    _banco.Beneficiario = cedente;
-                    _banco.FormataBeneficiario();
-
-                    //var boleto = new Boleto(_banco)
-                    //{
-                    //    ContaBancaria = contaBancaria,
-                    //    DataVencimento = CalculaDataVencimentoTitulo(), //Convert.ToDateTime("09/09/2023"),
-                    //    ValorBoleto = Convert.ToDecimal(valorMulta),
-                    //    NossoNumero = nossoNumero,
-                    //    NumeroDocumento = "0000000085",
-                    //    Carteira = "18",
-                    //    Cedente = cedente,
-                    //    Sacado = sacado,
-                    //    EspecieDocumento = new EspecieDocumento_BancoBrasil("4"),
-                    //    LocalPagamento = "PAGÁVEL EM QUALQUER BANCO ATÉ O VENCIMENTO",
-                    //    Instrucoes = new List<IInstrucao>() { new Instrucao_BancoBrasil() { Descricao = "Desconto de 20% se pago até 20 dias a contar da data de recebimento desta notificação, nos termos do art. 21 da Lei n. 6.437/77" } },
-                    //    DataDesconto = CalculaDataLimitePagamentoDesconto(),
-                    //    NumeroProcesso = dadosDebito.NumProcesso,
-                    //    NumeroDebito = codigoDebito.ToString(),
-                    //    NumeroDecisao = dadosDebito.NumDocumento,
-                    //    ValorDesconto = Convert.ToDecimal(valorDesconto)
-                    //};
-
-                    var boleto = new Boleto(_banco)
-                    {
-                        DataVencimento = CalculaDataVencimentoTitulo(),
-                        ValorTitulo = Convert.ToDecimal(valorMulta),
-                        NossoNumero = nossoNumero,
-                        NumeroDocumento = "0000000085",
-                        EspecieDocumento = TipoEspecieDocumento.DS,
-                        Pagador = sacado,
-                        Carteira = "17",
-                        DataDesconto = CalculaDataLimitePagamentoDesconto(),
-                        ValorDesconto = Convert.ToDecimal(valorDesconto),
-                        ImprimirMensagemInstrucao = true,
-                        MensagemInstrucoesCaixaFormatado = "Desconto de 20% se pago até 20 dias a contar da data de recebimento desta notificação, nos termos do art. 21 da Lei n. 6.437/77",
-                        MensagemInstrucoesCaixa = "Desconto de 20% se pago até 20 dias a contar da data de recebimento desta notificação, nos termos do art. 21 da Lei n. 6.437/77"
-                    };
-
-                    var boleto_bancario = new BoletoBancario()
-                    {
-                        Boleto = boleto,
-                        MostrarCodigoCarteira = false,
-                        MostrarComprovanteEntrega = false,
-                        OcultarReciboPagador = true                        
-                    };
-
-                    boleto_bancario.Boleto.ValidarDados();
-
-                    //string htmlBoleto = boleto_bancario.MontaHtmlEmbedded();
-
-                    lstBoletos.Add(boleto_bancario);
-
-                    var bytes = boleto_bancario.MontaBytesListaBoletosPDF(lstBoletos, codigoDebito.ToString());
-                    
-                    string diretorioBoleto = System.Web.HttpContext.Current.Server.MapPath("./Boleto");
-
-                    if (!Directory.Exists(diretorioBoleto))
-                        Directory.CreateDirectory(diretorioBoleto);
-
-                    string pathBoleto = Path.Combine(diretorioBoleto, codigoDebito.ToString() + "_Boleto.pdf");
-
-                    using (var fs = new FileStream(pathBoleto, FileMode.Create, FileAccess.Write))
-                    {
-                        fs.Write(bytes, 0, bytes.Length);
+                        LogradouroEndereco = dadosDebito.Endereco,
+                        Bairro = dadosDebito.Bairro,
+                        Cidade = dadosDebito.Cidade,
+                        UF = dadosDebito.UF,
+                        CEP = dadosDebito.Cep
                     }
+                };
 
-                    //HttpClient client = new HttpClient();
-                    //client.BaseAddress = new Uri("https://unigru-pre.anvisa.gov.br");
-                    //client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                _banco = Banco.Instancia(Bancos.BancoDoBrasil);
+                _banco.Beneficiario = cedente;
+                _banco.FormataBeneficiario();
 
-                    //HttpResponseMessage response = client.GetAsync($"/unigru/guia/{retorno.guiaArrecad.ano.ToString()}/{retorno.guiaArrecad.numero.ToString()}").Result;
+                var boleto = new Boleto(_banco)
+                {
+                    DataVencimento = CalculaDataVencimentoTitulo(),
+                    ValorTitulo = Convert.ToDecimal(valorMulta),
+                    NossoNumero = nossoNumero,
+                    NumeroDocumento = "0000000085",
+                    EspecieDocumento = TipoEspecieDocumento.DS,
+                    Pagador = sacado,
+                    Carteira = "17",
+                    DataDesconto = CalculaDataLimitePagamentoDesconto(),
+                    ValorDesconto = Convert.ToDecimal(valorDesconto),
+                    ImprimirMensagemInstrucao = true,
+                    MensagemInstrucoesCaixaFormatado = "Desconto de 20% se pago até 20 dias a contar da data de recebimento desta notificação, nos termos do art. 21 da Lei n. 6.437/77",
+                    MensagemInstrucoesCaixa = "Desconto de 20% se pago até 20 dias a contar da data de recebimento desta notificação, nos termos do art. 21 da Lei n. 6.437/77",
+                };
 
-                    //if (response.IsSuccessStatusCode)
-                    //{
-                    //    var renderer = new ChromePdfRenderer();
+                var boleto_bancario = new BoletoBancario()
+                {
+                    Boleto = boleto,
+                    MostrarCodigoCarteira = false,
+                    MostrarComprovanteEntrega = false,
+                    OcultarReciboPagador = true
+                };
 
-                    //    var strContent = response.Content.ReadAsStringAsync().Result;
+                boleto_bancario.Boleto.ValidarDados();
 
-                    //    var pdf = renderer.RenderHtmlAsPdf(strContent);
+                lstBoletos.Add(boleto_bancario);
 
-                    //    pdf.SaveAs($"C:\\Anvisa\\CodivaServiceWS\\CodivaServiceWS\\CodivaServiceWS\\Boleto\\Boleto_{retorno.guiaArrecad.numero.ToString()}.pdf");
-                    //}
+                var bytes = boleto_bancario.MontaBytesListaBoletosPDF(lstBoletos, codigoDebito.ToString());
+
+                string diretorioBoleto = System.Web.HttpContext.Current.Server.MapPath("./Boleto");
+
+                if (!Directory.Exists(diretorioBoleto))
+                    Directory.CreateDirectory(diretorioBoleto);
+
+                string pathBoleto = Path.Combine(diretorioBoleto, codigoDebito.ToString() + "_Boleto.pdf");
+
+                using (var fs = new FileStream(pathBoleto, FileMode.Create, FileAccess.Write))
+                {
+                    fs.Write(bytes, 0, bytes.Length);
                 }
-                else
-                    return (false, urlBoleto, nossoNumero);
 
-                //if (retorno != null && retorno.guiaArrecad != null)
-                //    urlBoleto = $"https://unigru-pre.anvisa.gov.br/unigru/guia/{retorno.guiaArrecad.ano.ToString()}/{retorno.guiaArrecad.numero.ToString()}";
-
-                return (true, urlBoleto, nossoNumero);
+                return (true, urlBoleto, nossoNumero, retorno.codigoBoletoRegistrado, retorno.guiaArrecad.numero);
             }
             catch (Exception ex)
             {
-                return (false, urlBoleto, nossoNumero);
+                return (false, urlBoleto, nossoNumero, codigoBoletoRegistrado, numeroGuia);
             }
         }
 
@@ -347,6 +303,11 @@ namespace CodivaServiceWS.Service.Implementation
         public bool IncluirParcelaDebito(int codigoDebito, string nossoNumero, string dataVencimento, string valorMulta)
         {
             return _debitoDapper.IncluirParcelaDebito(codigoDebito, nossoNumero, dataVencimento, valorMulta);
+        }
+
+        public bool AtualizaNossoNumero(double codigoBoletoRegistrado, string nossoNumero)
+        {
+            return _debitoDapper.AtualizaNossoNumero(codigoBoletoRegistrado, nossoNumero);
         }
 
         public bool AtualizarSituacaoDebito(int codigoDebito, int codigoSituacao)

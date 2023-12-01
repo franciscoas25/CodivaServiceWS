@@ -13,7 +13,7 @@ namespace PagamentoDebitoService.Email
 {
     public static class EnvioEmail
     {
-        public static void Send(string lstDestinatarios, IEnumerable<DadosGuiaDto> lstGuiasPagas, string assunto, string remetente, string nomeEmail, string host, int port)
+        public static void Send(string lstDestinatarios, IEnumerable<DadosGuiaDto> lstGuiasPagas, IEnumerable<DadosGuiaDto> lstGuiasVencidas, string assunto, string remetente, string nomeEmail, string host, int port)
         {
             StringBuilder sb = new StringBuilder();
 
@@ -21,39 +21,86 @@ namespace PagamentoDebitoService.Email
 
             try
             {
+                #region Email guias pagas
+
                 sb.AppendLine($"<span><b>Guias pagas em {DateTime.Now.AddDays(-1).ToShortDateString()}</b></span>");
                 sb.Append("<br/>");
                 sb.Append("<br/>");
 
                 if (!lstGuiasPagas.Any())
                     sb.AppendLine("Não foram constatados pagamentos de multa para esta data");
-
-                sb.AppendLine("<table>");
-
-                sb.Append("<tr>");
-                sb.Append("<th style='border: 1px solid'>Número do processo administrativo sanitário</th>");
-                sb.Append("<th style='border: 1px solid'>Número de referência da GRU</th>");
-                sb.Append("<th style='border: 1px solid'>Data do pagamento</th>");
-                sb.Append("<th style='border: 1px solid'>Valor pago</th>");
-                sb.Append("</tr>");
-
-                foreach (var guia in lstGuiasPagas)
+                else
                 {
+                    sb.AppendLine("<table>");
+
                     sb.Append("<tr>");
-                    sb.AppendLine($"<td style='border: 1px solid; text-align: right'>{guia.NumeroProcesso}</td>");
-                    sb.AppendLine($"<td style='border: 1px solid; text-align: right'>{guia.NumeroReferencia}</td>");
-                    sb.AppendLine($"<td style='border: 1px solid; text-align: right'>{guia.DataPagamento.ToShortDateString()}</td>");
-                    sb.AppendLine($"<td style='border: 1px solid; text-align: right'>R$ {guia.ValorPago.ToString("##,###.##")}</td>");
-                    sb.Append("</tr>");                    
+                    sb.Append("<th style='border: 1px solid'>Número do processo administrativo sanitário</th>");
+                    sb.Append("<th style='border: 1px solid'>Número de referência da GRU</th>");
+                    sb.Append("<th style='border: 1px solid'>Data do pagamento</th>");
+                    sb.Append("<th style='border: 1px solid'>Valor pago</th>");
+                    sb.Append("<th style='border: 1px solid'>Valor Total Guia</th>");
+                    sb.Append("</tr>");
+
+                    foreach (var guia in lstGuiasPagas)
+                    {
+                        sb.Append("<tr>");
+                        sb.AppendLine($"<td style='border: 1px solid; text-align: right'>{guia.NumeroProcesso}</td>");
+                        sb.AppendLine($"<td style='border: 1px solid; text-align: right'>{guia.NumeroReferencia}</td>");
+                        sb.AppendLine($"<td style='border: 1px solid; text-align: right'>{guia.DataPagamento.ToShortDateString()}</td>");
+                        sb.AppendLine($"<td style='border: 1px solid; text-align: right'>R$ {guia.ValorPago.ToString("##,###.##")}</td>");
+                        sb.AppendLine($"<td style='border: 1px solid; text-align: right'>R$ {guia.ValorTotalGuia.ToString("##,###.##")}</td>");
+                        sb.Append("</tr>");
+                    }
+
+                    sb.AppendLine("</table>");
                 }
 
-                sb.AppendLine("</table>");
+                #endregion
 
-                var smtpClient = new SmtpClient(host, port);                
+                sb.Append("<br/>");
+                sb.Append("<br/>");
+
+                #region Email guias vencidas
+
+                sb.AppendLine($"<span><b>Guias vencidas em {DateTime.Now.AddDays(-1).ToShortDateString()}</b></span>");
+                sb.Append("<br/>");
+                sb.Append("<br/>");
+
+                if (!lstGuiasVencidas.Any())
+                    sb.AppendLine("Não foram constatadas guias vencidas para esta data");
+                else
+                {
+                    sb.AppendLine("<table>");
+
+                    sb.Append("<tr>");
+                    sb.Append("<th style='border: 1px solid'>Número do processo administrativo sanitário</th>");
+                    sb.Append("<th style='border: 1px solid'>Número de referência da GRU</th>");
+                    //sb.Append("<th style='border: 1px solid'>Data do pagamento</th>");
+                    //sb.Append("<th style='border: 1px solid'>Valor pago</th>");
+                    sb.Append("<th style='border: 1px solid'>Valor Total Guia</th>");
+                    sb.Append("</tr>");
+
+                    foreach (var guia in lstGuiasVencidas)
+                    {
+                        sb.Append("<tr>");
+                        sb.AppendLine($"<td style='border: 1px solid; text-align: right'>{guia.NumeroProcesso}</td>");
+                        sb.AppendLine($"<td style='border: 1px solid; text-align: right'>{guia.NumeroReferencia}</td>");
+                        //sb.AppendLine($"<td style='border: 1px solid; text-align: right'>N/A</td>");
+                        //sb.AppendLine($"<td style='border: 1px solid; text-align: right'>R$ 0</td>");
+                        sb.AppendLine($"<td style='border: 1px solid; text-align: right'>R$ {guia.ValorTotalGuia.ToString("##,###.##")}</td>");
+                        sb.Append("</tr>");
+                    }
+
+                    sb.AppendLine("</table>");
+                }
+
+                #endregion
+
+                var smtpClient = new SmtpClient(host, port);
                 smtpClient.Timeout = 10000;
                 smtpClient.EnableSsl = true;
-                //smtpClient.Credentials = new NetworkCredential("franciscoas25@gmail.com", "ycfq ztwk gmyi vwst");
-                smtpClient.Credentials = new NetworkCredential("rni@anvisa.gov.br", "");
+                smtpClient.Credentials = new NetworkCredential("franciscoas25@gmail.com", "ycfq ztwk gmyi vwst");
+                //smtpClient.Credentials = new NetworkCredential("rni@anvisa.gov.br", "");
 
                 mailMessage.From = new MailAddress(remetente, nomeEmail);
                 mailMessage.Body = sb.ToString();
@@ -64,7 +111,7 @@ namespace PagamentoDebitoService.Email
 
                 smtpClient.Send(mailMessage);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }

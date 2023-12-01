@@ -17,5 +17,6 @@ namespace CodivaServiceWS.Dapper.Interface
         bool AlterarDebito(int codigoDebito, DadosDebito dadosDebito);
         bool IncluirParcelaDebito(int codigoDebito, string nossoNumero, string dataVencimento, string valorMulta);
         bool AtualizarSituacaoDebito(int codigoDebito, int codigoSituacao);
+        bool AtualizaNossoNumero(double codigoBoletoRegistrado, string nossoNumero);
     }
 }

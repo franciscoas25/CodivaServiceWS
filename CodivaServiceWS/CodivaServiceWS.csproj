@@ -944,6 +944,7 @@
     <Compile Include="Dapper\Interface\IDebitoDapper.cs" />
     <Compile Include="Dapper\Interface\IPessoaAutuadaDapper.cs" />
     <Compile Include="Dapper\Interface\IQueryBuilderBaseDapper.cs" />
+    <Compile Include="Dto\IncluirDebitoRequestDto.cs" />
     <Compile Include="Dto\IncluirDebitoResponseDto.cs" />
     <Compile Include="Dto\PessoaAutuadaDto.cs" />
     <Compile Include="Enum\Enum.cs" />

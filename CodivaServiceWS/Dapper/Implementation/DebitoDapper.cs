@@ -234,6 +234,20 @@ namespace CodivaServiceWS.Dapper.Implementation
             }
         }
 
+        public bool AtualizaNossoNumero(double codigoBoletoRegistrado, string nossoNumero)
+        {
+            using (IDbConnection connection = CodivaServiceConnection.GetConnection())
+            {
+                string sql = $@"UPDATE DBARRECAD.TB_BOLETOBB_REGISTRADO
+                                SET ID_SOLICITACAO = '{nossoNumero}'
+                                WHERE CO_SEQ_BOLETOBB_REGISTRADO = {codigoBoletoRegistrado}";
+
+                var result = connection.Execute(sql);
+
+                return result > 0;
+            }
+        }
+
         public bool AtualizarSituacaoDebito(int codigoDebito, int codigoSituacao)
         {
             using (IDbConnection connection = CodivaServiceConnection.GetConnection2())
