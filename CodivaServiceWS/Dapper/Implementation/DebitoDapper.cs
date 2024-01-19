@@ -20,7 +20,7 @@ namespace CodivaServiceWS.Dapper.Implementation
 {
     public class DebitoDapper : IDebitoDapper
     {
-        public bool IncluirDebito(int codPessoaDevedora, string receita, int codStatusDebito, int unidadeArrecadadora, string anoDocumento, string numDocumento, string numProcesso, int tipoDebito, string dataMulta, string valorMulta, string dataVencimento)
+        public bool IncluirDebito(int codPessoaDevedora, string receita, int codStatusDebito, int unidadeArrecadadora, string anoDocumento, string numDocumento, string numProcesso, int tipoDebito, string dataMulta, double valorMulta, string dataVencimento)
         {
             using (IDbConnection connection = CodivaServiceConnection.GetConnection())
             {
@@ -59,7 +59,7 @@ namespace CodivaServiceWS.Dapper.Implementation
                                     0,
                                     to_date('{DateTime.Now}', 'dd/mm/yyyy HH24:mi:ss'),
                                     null,
-                                    to_date('{dataMulta}', 'dd/mm/yyyy HH24:mi:ss'),
+                                    to_date('{Convert.ToDateTime(dataMulta).ToShortDateString()}', 'dd/mm/yyyy HH24:mi:ss'),
                                     'N'
                                 )";
 
@@ -199,7 +199,7 @@ namespace CodivaServiceWS.Dapper.Implementation
             }
         }
 
-        public bool IncluirParcelaDebito(int codigoDebito, string nossoNumero, string dataVencimento, string valorMulta)
+        public bool IncluirParcelaDebito(int codigoDebito, string nossoNumero, string dataVencimento, double valorMulta)
         {
             using (IDbConnection connection = CodivaServiceConnection.GetConnection2())
             {

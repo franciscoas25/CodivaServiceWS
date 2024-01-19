@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Razor.TagHelpers;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace CodivaServiceWS.Dto
 {
-    public class IncluirDebitoRequestDto
+    public class Debitos
     {
         public string cpf_cnpj { get; set; }
         public string sistemaOrigem { get; set; }
@@ -19,7 +21,7 @@ namespace CodivaServiceWS.Dto
         public string receita { get; set; }
         public int unidadeArrecadadora { get; set; }
         public string dataMulta { get; set; }
-        public string valorMulta { get; set; }
+        public double valorMulta { get; set; }
         public string dataVencimento { get; set; }
     }
 }

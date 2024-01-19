@@ -35,7 +35,7 @@ namespace CodivaServiceWS.Service.Implementation
         [Inject]
         public IBaseDapper _baseDapper { get; set; }
 
-        public bool IncluirDebito(string cpf_cnpj, string tipoDebito, string numDocumento, string anoDocumento, string numProcesso, string gerencia, string nomePessoa, string receita, int unidadeArrecadadora, string dataMulta, string valorMulta)
+        public bool IncluirDebito(string cpf_cnpj, string tipoDebito, string numDocumento, string anoDocumento, string numProcesso, string gerencia, string nomePessoa, string receita, int unidadeArrecadadora, string dataMulta, double valorMulta)
         {
             var dataVencimentoDebito = CalculaDataVencimentoTitulo().ToString();
 
@@ -101,7 +101,7 @@ namespace CodivaServiceWS.Service.Implementation
             return _debitoDapper.CalculaNossoNumero(uf, receita, tipoNossoNumero);
         }
 
-        public (bool sucesso, string urlBoleto, string nossoNumero, double codigoBoletoRegistrado, int numeroGuia) GerarNotificacaoDebito(int codigoDebito, string valorMulta, string dataVencimento, string percentualSelic, string percentualMulta, string valorSelic, string valorMultaSelic)
+        public (bool sucesso, string urlBoleto, string nossoNumero, double codigoBoletoRegistrado, int numeroGuia) GerarNotificacaoDebito(int codigoDebito, double valorMulta, string dataVencimento, string percentualSelic, string percentualMulta, string valorSelic, string valorMultaSelic, string cpfCnpj)
         {
             string urlBoleto = string.Empty;
             string nossoNumero = string.Empty;
@@ -125,7 +125,8 @@ namespace CodivaServiceWS.Service.Implementation
                 //serviceRegistroBoletoProducao.requisicaoBoletoRegistradoAvulso parametrosRequisicao = new serviceRegistroBoletoProducao.requisicaoBoletoRegistradoAvulso();
                 //serviceRegistroBoletoProducao.GuiaWebServiceClient guiaWS = new serviceRegistroBoletoProducao.GuiaWebServiceClient();
 
-                var valorDesconto = float.Parse(valorMulta) * (0.2);
+                //var valorDesconto = double.Parse(valorMulta.Replace('.', ',')) * (0.2);
+                var valorDesconto = valorMulta * (0.2);
 
                 parametrosRequisicao.idSistema = "BAIXABB";
                 parametrosRequisicao.numeroConvenio = "3547147";
@@ -134,7 +135,7 @@ namespace CodivaServiceWS.Service.Implementation
                 parametrosRequisicao.codigoModalidadeTitulo = "1";
                 parametrosRequisicao.dataEmissaoTitulo = "23.06.2023";
                 parametrosRequisicao.dataVencimentoTitulo = CalculaDataVencimentoTitulo().ToShortDateString().Replace("/", ".");
-                parametrosRequisicao.valorOriginalTitulo = valorMulta;
+                parametrosRequisicao.valorOriginalTitulo = valorMulta.ToString();
                 parametrosRequisicao.codigoTipoDesconto = "1";
                 parametrosRequisicao.codigoTipoJuroMora = "0";
                 parametrosRequisicao.codigoTipoMulta = "0";
@@ -145,7 +146,8 @@ namespace CodivaServiceWS.Service.Implementation
                 parametrosRequisicao.textoNumeroTituloCliente = parametrosRequisicao.numeroConvenio + codigoDebito.ToString().PadLeft(8, '0') + DateTime.Now.ToString("yy");
                 parametrosRequisicao.textoMensagemBloquetoOcorrencia = instrucoes;
                 parametrosRequisicao.codigoTipoInscricaoPagador = "2";
-                parametrosRequisicao.numeroInscricaoPagador = "11111111000191";
+                //parametrosRequisicao.numeroInscricaoPagador = "11111111000191";
+                parametrosRequisicao.numeroInscricaoPagador = cpfCnpj;
                 parametrosRequisicao.nomePagador = "clinkids servicos medicos ltda";
                 parametrosRequisicao.textoEnderecoPagador = dadosDebito.Endereco;
                 parametrosRequisicao.numeroCepPagador = dadosDebito.Cep;
@@ -300,7 +302,7 @@ namespace CodivaServiceWS.Service.Implementation
             return !dt.IsHoliday() && dt.DayOfWeek != DayOfWeek.Saturday && dt.DayOfWeek != DayOfWeek.Sunday;
         }
 
-        public bool IncluirParcelaDebito(int codigoDebito, string nossoNumero, string dataVencimento, string valorMulta)
+        public bool IncluirParcelaDebito(int codigoDebito, string nossoNumero, string dataVencimento, double valorMulta)
         {
             return _debitoDapper.IncluirParcelaDebito(codigoDebito, nossoNumero, dataVencimento, valorMulta);
         }

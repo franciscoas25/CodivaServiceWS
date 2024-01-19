@@ -13,16 +13,14 @@ using System.Text;
 using System.Web;
 using System.Web.Script.Services;
 using System.Web.Services;
+using System.Web.Services.Protocols;
+using System.Web.UI.Design;
 using System.Xml;
 using static CodivaServiceWS.Enum.Enum;
 
 namespace CodivaServiceWS
 {
-    //[WebService(Namespace = "http://tempuri.org/")]
-    //[WebService(Namespace = "https://localhost:44345/WSCodivaService.asmx/")]
-    //[WebService(Namespace = "http://10.103.0.41:8083/WSCodivaService.asmx/")]
-    [WebServiceBinding(ConformsTo = WsiProfiles.BasicProfile1_1)]
-    [System.ComponentModel.ToolboxItem(false)]
+    [WebService(Namespace = "http://tempuri.org/")]    
     public class WSCodivaService : WebServiceBase
     {
         [Inject]
@@ -31,103 +29,97 @@ namespace CodivaServiceWS
         public IDebitoService _debitoService { get; set; }
 
         [WebMethod]
-        public IncluirDebitoResponseDto IncluirDebito(string cpf_cnpj, string sistemaOrigem, string tipoDebito, string numDocumento, string anoDocumento, string numProcesso, string gerencia, string nomePessoa, string receita, int unidadeArrecadadora, string dataMulta, string valorMulta, string dataVencimento)
-        //public IncluirDebitoResponseDto IncluirDebito(IncluirDebitoRequestDto incluirDebitoRequestDto)
+        public IncluirDebitoResponseDto IncluirDebito(Debitos debitos)
         {
-            //GravarMensagem("cpf_cnpj: " + cpf_cnpj);
-            //GravarMensagem("sistemaOrigem: " + sistemaOrigem);
-            //GravarMensagem("tipoDebito: " + tipoDebito);
-            //GravarMensagem("numDocumento: " + numDocumento);
-            //GravarMensagem("anoDocumento: " + anoDocumento);
-            //GravarMensagem("numProcesso: " + numProcesso);
-            //GravarMensagem("gerencia: " + gerencia);
-            //GravarMensagem("nomePessoa: " + nomePessoa);
-            //GravarMensagem("receita: " + receita);
-            //GravarMensagem("unidadeArrecadadora: " + unidadeArrecadadora);
-            //GravarMensagem("dataMulta: " + dataMulta);
-            //GravarMensagem("valorMulta: " + valorMulta);
-            //GravarMensagem("dataVencimento: " + dataVencimento);
-
-            //Random randNum = new Random();
-
-            //cpf_cnpj = "03583856872";
-            //sistemaOrigem = "SEI";
-            //tipoDebito = "";
-            //numDocumento = randNum.Next().ToString();
-            //anoDocumento = "2023";
-            //numProcesso = "1250";
-            //gerencia = "GGTAB";
-            //nomePessoa = "JOSEMILDA B. C. ALBUQUERQUE";
-            //receita = "";
-            //unidadeArrecadadora = 10707;
-            //dataMulta = DateTime.Now.ToShortDateString();
-            //valorMulta = "650";
-            //dataVencimento = "28/11/2023";
-
             IncluirDebitoResponseDto incluirDebitoResponseDto = new IncluirDebitoResponseDto();
 
             try
             {
+                GravarMensagem("Iniciando cadastro de débito...");
+
+                Random randNum = new Random();
+
+                //cpf_cnpj = "03583856872";
+                //sistemaOrigem = "SEI";
+                debitos.tipoDebito = "";
+                debitos.numDocumento = randNum.Next().ToString();
+                debitos.anoDocumento = "2023";
+                //numProcesso = "1250";
+                debitos.gerencia = "GGTAB";
+                debitos.nomePessoa = "JOSEMILDA B. C. ALBUQUERQUE";
+                debitos.receita = "";
+                debitos.unidadeArrecadadora = 10707;
+                //dataMulta = DateTime.Now.ToShortDateString();
+                //valorMulta = "650";
+                //dataVencimento = "28/11/2023";
+
                 GravarMensagem($"******************** Início inserção do débito às {DateTime.Now} ********************");
 
                 PessoaAutuadaDto pessoaAutuadaDto = new PessoaAutuadaDto();
 
-                if (sistemaOrigem == SistemaOrigem.SEI.GetType().GetMember(SistemaOrigem.SEI.ToString()).First().GetCustomAttribute<DescriptionAttribute>().Description)
+                if (debitos.sistemaOrigem == SistemaOrigem.SEI.GetType().GetMember(SistemaOrigem.SEI.ToString()).First().GetCustomAttribute<DescriptionAttribute>().Description)
                 {
-                    tipoDebito = TipoDebito.AutoInfracao.GetType().GetMember(TipoDebito.AutoInfracao.ToString()).First().GetCustomAttribute<DescriptionAttribute>().Description;
-                    receita = Receita.CobrancaMulta.GetType().GetMember(Receita.CobrancaMulta.ToString()).First().GetCustomAttribute<DescriptionAttribute>().Description;
-                    unidadeArrecadadora = (int)UnidadeArrecadadora.DistritoFederal;
+                    debitos.tipoDebito = TipoDebito.AutoInfracao.GetType().GetMember(TipoDebito.AutoInfracao.ToString()).First().GetCustomAttribute<DescriptionAttribute>().Description;
+                    debitos.receita = Receita.CobrancaMulta.GetType().GetMember(Receita.CobrancaMulta.ToString()).First().GetCustomAttribute<DescriptionAttribute>().Description;
+                    debitos.unidadeArrecadadora = (int)UnidadeArrecadadora.DistritoFederal;
                 }
 
-                if (cpf_cnpj.Length == (int)TipoPessoa.PessoaFisica)
-                    pessoaAutuadaDto = _pessoaAutuadaService.ObterDadosPessoaFisicaBaseDbCorporativo(cpf_cnpj);
+                GravarMensagem("cpf_cnpj: " + debitos.cpf_cnpj);
+                GravarMensagem("sistemaOrigem: " + debitos.sistemaOrigem);
+                GravarMensagem("tipoDebito: " + debitos.tipoDebito);
+                GravarMensagem("numDocumento: " + debitos.numDocumento);
+                GravarMensagem("anoDocumento: " + debitos.anoDocumento);
+                GravarMensagem("numProcesso: " + debitos.numProcesso);
+                GravarMensagem("gerencia: " + debitos.gerencia);
+                GravarMensagem("nomePessoa: " + debitos.nomePessoa);
+                GravarMensagem("receita: " + debitos.receita);
+                GravarMensagem("unidadeArrecadadora: " + debitos.unidadeArrecadadora);
+                GravarMensagem("dataMulta: " + debitos.dataMulta);
+                GravarMensagem("valorMulta: " + debitos.valorMulta);
+                GravarMensagem("dataVencimento: " + debitos.dataVencimento);
+
+                if (debitos.cpf_cnpj.Length == (int)TipoPessoa.PessoaFisica)
+                    pessoaAutuadaDto = _pessoaAutuadaService.ObterDadosPessoaFisicaBaseDbCorporativo(debitos.cpf_cnpj);
                 else
-                    pessoaAutuadaDto = _pessoaAutuadaService.ObterDadosPessoaJuridicaBaseDbCorporativo(cpf_cnpj);
+                    pessoaAutuadaDto = _pessoaAutuadaService.ObterDadosPessoaJuridicaBaseDbCorporativo(debitos.cpf_cnpj);
 
                 if (pessoaAutuadaDto == null)
                     return incluirDebitoResponseDto;
 
-                if (!_pessoaAutuadaService.VerificarExistenciaPessoaAutuada(cpf_cnpj))
+                if (!_pessoaAutuadaService.VerificarExistenciaPessoaAutuada(debitos.cpf_cnpj))
                 {
-                    if (!_pessoaAutuadaService.IncluirPessoaAutuada(cpf_cnpj, pessoaAutuadaDto.NOME_RAZAOSOCIAL, pessoaAutuadaDto.ENDERECO, pessoaAutuadaDto.CEP, pessoaAutuadaDto.NM_CIDADE, pessoaAutuadaDto.COD_CIDADE))
+                    if (!_pessoaAutuadaService.IncluirPessoaAutuada(debitos.cpf_cnpj, pessoaAutuadaDto.NOME_RAZAOSOCIAL, pessoaAutuadaDto.ENDERECO, pessoaAutuadaDto.CEP, pessoaAutuadaDto.NM_CIDADE, pessoaAutuadaDto.COD_CIDADE))
                         return incluirDebitoResponseDto;
                 }
                 else
                 {
-                    if (!_pessoaAutuadaService.AtualizarPessoaAutuada(cpf_cnpj, pessoaAutuadaDto.NOME_RAZAOSOCIAL, pessoaAutuadaDto.ENDERECO, pessoaAutuadaDto.CEP, pessoaAutuadaDto.NM_CIDADE, pessoaAutuadaDto.COD_CIDADE))
+                    if (!_pessoaAutuadaService.AtualizarPessoaAutuada(debitos.cpf_cnpj, pessoaAutuadaDto.NOME_RAZAOSOCIAL, pessoaAutuadaDto.ENDERECO, pessoaAutuadaDto.CEP, pessoaAutuadaDto.NM_CIDADE, pessoaAutuadaDto.COD_CIDADE))
                         return incluirDebitoResponseDto;
                 }
 
-                if (_debitoService.VerificaSeDebitoEstaCadastrado(tipoDebito, numDocumento, anoDocumento, unidadeArrecadadora))
+                if (_debitoService.VerificaSeDebitoEstaCadastrado(debitos.tipoDebito, debitos.numDocumento, debitos.anoDocumento, debitos.unidadeArrecadadora))
                     return incluirDebitoResponseDto;
 
                 GravarMensagem("Inserindo um novo débito...");
 
-                if (!_debitoService.IncluirDebito(cpf_cnpj, tipoDebito, numDocumento, anoDocumento, numProcesso, gerencia, nomePessoa, receita, unidadeArrecadadora, dataMulta, valorMulta))
+                if (!_debitoService.IncluirDebito(debitos.cpf_cnpj, debitos.tipoDebito, debitos.numDocumento, debitos.anoDocumento, debitos.numProcesso, debitos.gerencia, debitos.nomePessoa, debitos.receita, debitos.unidadeArrecadadora, debitos.dataMulta, debitos.valorMulta))
                     return incluirDebitoResponseDto;
 
                 GravarMensagem("Débito inserido com sucesso!");
 
-                var codigoDebito = _debitoService.ObterCodigoDebito(tipoDebito, numDocumento, anoDocumento, unidadeArrecadadora);
+                var codigoDebito = _debitoService.ObterCodigoDebito(debitos.tipoDebito, debitos.numDocumento, debitos.anoDocumento, debitos.unidadeArrecadadora);
 
                 if (codigoDebito == 0)
                     return incluirDebitoResponseDto;
 
                 GravarMensagem($"Código do débito: {codigoDebito}");
 
-                if (!_debitoService.IncluirHistoricoSituacaoDebito(codigoDebito, tipoDebito, numDocumento, anoDocumento, unidadeArrecadadora))
+                if (!_debitoService.IncluirHistoricoSituacaoDebito(codigoDebito, debitos.tipoDebito, debitos.numDocumento, debitos.anoDocumento, debitos.unidadeArrecadadora))
                     return incluirDebitoResponseDto;
-
-                //var nossoNumero = _debitoService.CalculaNossoNumero("11", receita, "0");
-
-                //if (!_debitoService.IncluirParcelaDebito(codigoDebito, nossoNumero.ToString(), "01/01/2099", valorMulta))
-                //{
-                //    return incluirDebitoResponseDto;
-                //}
 
                 GravarMensagem("Realizando notificação do débito...");
 
-                var retorno = _debitoService.GerarNotificacaoDebito(codigoDebito, valorMulta, "01/01/2099", "0", "0", "0", "0");
+                var retorno = _debitoService.GerarNotificacaoDebito(codigoDebito, debitos.valorMulta, "01/01/2099", "0", "0", "0", "0", debitos.cpf_cnpj);
 
                 if (retorno.sucesso)
                 {
@@ -143,7 +135,7 @@ namespace CodivaServiceWS
 
                 GravarMensagem("Inserindo parcela do débito...");
 
-                if (!_debitoService.IncluirParcelaDebito(codigoDebito, retorno.nossoNumero, "01/01/2099", valorMulta))
+                if (!_debitoService.IncluirParcelaDebito(codigoDebito, retorno.nossoNumero, "01/01/2099", debitos.valorMulta))
                     return incluirDebitoResponseDto;
 
                 if (!_debitoService.AtualizaNossoNumero(retorno.codigoBoletoRegistrado, retorno.nossoNumero))
@@ -155,7 +147,7 @@ namespace CodivaServiceWS
 
                 incluirDebitoResponseDto.CodigoReceita = 10;
                 incluirDebitoResponseDto.IdContrato = 100;
-                incluirDebitoResponseDto.LinkBoleto = $"https://unigru-pre.anvisa.gov.br/unigru/guia/2023/{retorno.numeroGuia}";
+                incluirDebitoResponseDto.LinkBoleto = $"https://unigru-pre.anvisa.gov.br/unigru/guia/2023/200540";
                 incluirDebitoResponseDto.NumeroFistel = "50";
                 incluirDebitoResponseDto.NumeroSequencial = 20;
 
@@ -163,17 +155,11 @@ namespace CodivaServiceWS
             }
             catch (Exception ex)
             {
-                //GravarMensagem();
-                
+                GravarMensagem($"Erro: {ex.Message}");
+
                 return incluirDebitoResponseDto;
             }
         }
-
-        //[WebMethod]
-        //public bool AtualizarDebito(int codigoDebito, string anoDocumento, string numDocumento, string numProcesso, string valorMulta, string dataVencimento)
-        //{
-        //    return _debitoService.AlterarDebito(codigoDebito, anoDocumento, numDocumento, numProcesso, valorMulta, dataVencimento);
-        //}        
 
         public void GravarMensagem(string mensagem)
         {
@@ -199,6 +185,7 @@ namespace CodivaServiceWS
             bool elementIsEmpty = false;
             bool excluirTagElement = false;
             bool isAddress = false;
+            bool isSchema = false;
 
             var urlWSDL = ConfigurationManager.AppSettings["UrlWSDL"];
             var urlWS = ConfigurationManager.AppSettings["UrlWS"];
@@ -217,6 +204,9 @@ namespace CodivaServiceWS
 
             while (reader.Read())
             {
+                if (reader.Name == "s:schema" && reader.NodeType == XmlNodeType.Element)
+                    isSchema = true;  
+                
                 elementIsEmpty = reader.IsEmptyElement;
 
                 excluirTagElement = reader.Name == "s:element" && !elementIsEmpty ? true : false;
@@ -263,6 +253,13 @@ namespace CodivaServiceWS
                         }
 
                         sb.AppendLine(elementIsEmpty ? "/>" : ">");
+
+                        if (isSchema)
+                        {
+                            sb.Append("<s:element name=\"IncluirDebito\" type=\"tns:IncluirDebito\"/>");
+
+                            isSchema = false;
+                        }
 
                         break;
 
